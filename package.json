@@ -12,6 +12,7 @@
     "dependencies": {
         "@react-native-async-storage/async-storage": "^2.1.2",
         "@react-native-community/blur": "^4.4.1",
+        "@react-native-community/checkbox": "^0.5.20",
         "@react-native-community/template": "^0.79.2",
         "@react-native-picker/picker": "^2.11.0",
         "@react-navigation/bottom-tabs": "^7.3.13",
@@ -22,6 +23,7 @@
         "@reduxjs/toolkit": "^2.8.2",
         "axios": "^1.10.0",
         "dotenv": "^17.2.3",
+        "formik": "^2.4.6",
         "i18next": "^25.2.0",
         "react": "19.0.0",
         "react-i18next": "^15.5.2",
@@ -37,9 +39,11 @@
         "react-native-screens": "^4.10.0",
         "react-native-svg": "^15.13.0",
         "react-native-svg-transformer": "^1.5.1",
+        "react-native-toast-message": "^2.3.3",
         "react-native-vector-icons": "^10.3.0",
         "react-native-video": "^6.17.0",
-        "react-redux": "^9.2.0"
+        "react-redux": "^9.2.0",
+        "yup": "^1.7.1"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",

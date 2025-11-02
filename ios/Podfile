@@ -8,11 +8,9 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+# Use static frameworks + modular headers (required for Firebase Swift pods)
+use_frameworks! :linkage => :static
+use_modular_headers!
 
 target 'MonezaCli' do
   config = use_native_modules!
@@ -23,16 +21,31 @@ target 'MonezaCli' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  # Firebase dependencies
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Analytics'
+
+  # Ensures interoperability pods generate module maps
+  pod 'GoogleUtilities', :modular_headers => true
+
+  # Optional but helps prevent warnings for dependent interop pods
+  pod 'FirebaseAuthInterop', :modular_headers => true
+  pod 'FirebaseAppCheckInterop', :modular_headers => true
+  pod 'FirebaseCoreExtension', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
+  pod 'FirebaseFirestoreInternal', :modular_headers => true
+
   # Explicitly add react-native-svg pod
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+      :mac_catalyst_enabled => false
     )
   end
 end

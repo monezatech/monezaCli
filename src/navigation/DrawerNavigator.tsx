@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import React, { useEffect } from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import BottomTabNavigator from './BottomTabNavigator';
 import SettingsScreen from '../views/Setting/SettingsScreen';
 import i18n from '../i18n/i18n';
@@ -23,11 +23,9 @@ export default function DrawerNavigator({
       <Drawer.Screen
         name="HomeTabs"
         component={BottomTabNavigator}
-        options={{title: 'Home'}}
+        options={{ title: 'Home' }}
       />
-      <Drawer.Screen
-        name="Settings"
-        options={{ headerShown: false }}>
+      <Drawer.Screen name="Settings" options={{ headerShown: false }}>
         {() => <SettingsScreen toggleTheme={toggleTheme} />}
       </Drawer.Screen>
     </Drawer.Navigator>
