@@ -14,9 +14,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setToken: (state, action: PayloadAction<string>) => {
+    setToken: (state, action: PayloadAction<string | null>) => { // Allow null for token
       state.token = action.payload;
-      state.isAuthenticated = true;
+      state.isAuthenticated = action.payload !== null; // Set isAuthenticated based on token presence
     },
 
     setIsAuthenticated: (state, action: PayloadAction<boolean>) => {

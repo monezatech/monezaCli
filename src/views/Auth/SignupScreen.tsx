@@ -14,11 +14,10 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import CheckBox from '@react-native-community/checkbox';
 import { apiService } from '../../services/service';
 import GradientButton from '../../components/GradientButton';
 import icon from '../../assets/images/loginpage.png';
@@ -107,14 +106,13 @@ const SignupScreen = () => {
           <ActivityIndicator size="large" color="#5264F9" />
         </View>
       )}
+      <Image source={icon} style={styles.logo} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Image source={icon} style={styles.logo} />
-
         <SafeAreaView style={styles.container}>
           <Text style={styles.title}>Create Account</Text>
 
@@ -136,10 +134,10 @@ const SignupScreen = () => {
               errors,
               touched,
             }) => (
-              <>
+              <View>
                 {/* Username */}
                 <View style={styles.inputContainer}>
-                  <Icon name="person-outline" size={22} style={styles.icon} />
+                  <Icon name="account-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
                     placeholder="Username"
@@ -155,7 +153,7 @@ const SignupScreen = () => {
 
                 {/* Email */}
                 <View style={styles.inputContainer}>
-                  <Icon name="mail-outline" size={22} style={styles.icon} />
+                  <Icon name="email-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
                     placeholder="Email"
@@ -172,11 +170,7 @@ const SignupScreen = () => {
 
                 {/* Password */}
                 <View style={styles.inputContainer}>
-                  <Icon
-                    name="lock-closed-outline"
-                    size={22}
-                    style={styles.icon}
-                  />
+                  <Icon name="lock-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
                     placeholder="Password"
@@ -202,11 +196,7 @@ const SignupScreen = () => {
 
                 {/* Confirm Password */}
                 <View style={styles.inputContainer}>
-                  <Icon
-                    name="lock-closed-outline"
-                    size={22}
-                    style={styles.icon}
-                  />
+                  <Icon name="lock-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
                     placeholder="Confirm Password"
@@ -233,11 +223,17 @@ const SignupScreen = () => {
                 )}
 
                 {/* Terms & Conditions */}
-                <View style={styles.section}>
-                  <CheckBox
-                    value={isChecked}
-                    onValueChange={setChecked}
-                    tintColors={{ true: '#5264F9', false: '#ccc' }}
+                <TouchableOpacity
+                  style={styles.section}
+                  onPress={() => setChecked(!isChecked)}
+                >
+                  <Icon
+                    name={
+                      isChecked ? 'checkbox-marked' : 'checkbox-blank-outline'
+                    }
+                    size={24}
+                    color={isChecked ? '#5264F9' : '#ccc'}
+                    style={styles.checkboxIcon}
                   />
                   <TouchableOpacity onPress={() => setTermsVisible(true)}>
                     <Text style={styles.paragraph}>
@@ -245,20 +241,20 @@ const SignupScreen = () => {
                       <Text style={styles.link}>Terms & Conditions</Text>
                     </Text>
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
 
                 <GradientButton onPress={handleSubmit} text="Sign Up" />
 
                 <TouchableOpacity
                   style={{ marginTop: 20 }}
-                  onPress={() => navigation.navigate('Login')}
+                  onPress={() => navigation.navigate('LoginScreen')}
                 >
                   <Text style={styles.signUp}>
                     Already have an account?{' '}
                     <Text style={styles.signUpLink}>Login</Text>
                   </Text>
                 </TouchableOpacity>
-              </>
+              </View>
             )}
           </Formik>
 
@@ -296,20 +292,17 @@ const SignupScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff', width: '100%' },
   scrollContainer: { paddingHorizontal: 20, alignItems: 'center' },
   logo: {
-    height: 250,
-    width: 250,
-    resizeMode: 'contain',
-    marginVertical: 20,
+    height: 350,
+    width: '100%',
   },
   title: {
     fontSize: 26,
     marginBottom: 30,
     fontWeight: 'bold',
     color: '#111',
-    textAlign: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -331,7 +324,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     alignSelf: 'flex-start',
   },
-  section: { flexDirection: 'row', alignItems: 'center', marginVertical: 15 },
+  section: { flexDirection: 'row', alignItems: 'center', marginVertical: 15, paddingRight: 10 },
+  checkboxIcon: { marginRight: 8 },
   paragraph: { fontSize: 14, color: '#333' },
   link: { color: '#1E90FF', fontWeight: '600' },
   signUp: { color: '#333', fontSize: 14 },

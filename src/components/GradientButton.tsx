@@ -35,8 +35,8 @@ const GradientButton = ({ onPress, text }) => {
 const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
-    height: 75,
-    borderRadius: 30,
+    height: 55,
+    borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 20,
   },
@@ -45,13 +45,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: '100%',
-    paddingLeft: 20,
-    borderRadius: 28,
+    borderRadius: 20,
   },
   text: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    paddingLeft: 10,
   },
   arrowBackground: {
     width: 150,

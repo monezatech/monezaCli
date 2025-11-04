@@ -34,8 +34,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 15,
-    backgroundColor: '#1E1E1E', // you can adjust this as per theme
+    backgroundColor: '#4960F9', // you can adjust this as per theme
   },
   menuButton: {
     padding: 5,

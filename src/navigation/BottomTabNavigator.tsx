@@ -3,6 +3,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../views/Home/Home';
 import CustomeTabBar from '../components/CustomeTabBar/CustomeTabBar';
+import SettingsScreen from '../views/Setting/SettingsScreen';
+import ProfileScreen from '../views/ProfileScreen';
+import NotificationScreen from '../views/Notifications/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,8 +17,8 @@ export default function BottomTabNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Analytics" component={HomeScreen} />
-      <Tab.Screen name="Feed" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={HomeScreen} />
+      <Tab.Screen name="notification" component={NotificationScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

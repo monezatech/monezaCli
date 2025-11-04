@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { setId } from '../store/auth/globalStateSlice';
-import StarRating from './StarRating';
+import { setId } from '../../store/auth/globalStateSlice';
+import StarRating from '../StarRating';
 
 const CourseInfoCard = ({ course }) => {
   const [rating, setRating] = useState(course?.rating || 4);
@@ -24,7 +24,7 @@ const CourseInfoCard = ({ course }) => {
 
   const handlePress = () => {
     dispatch(setId(course._id));
-    navigation.navigate('coursedetail');
+     navigation.navigate('CourseDetailsScreen');
   };
 
   return (
@@ -37,7 +37,7 @@ const CourseInfoCard = ({ course }) => {
         source={
           course?.thumbnailUrl?.trim()
             ? { uri: course.thumbnailUrl }
-            : require('../assets/images/commoncourse.jpg') // ✅ Updated path
+            : require('../../assets/images/commoncourse.jpg') // ✅ Updated path
         }
         style={styles.image}
       />

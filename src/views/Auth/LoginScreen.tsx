@@ -15,7 +15,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
@@ -76,7 +76,7 @@ const LoginScreen = () => {
           text2: response.message || 'Welcome back!',
         });
 
-        navigation.replace('MainTabs');
+        navigation.navigate('BottomTabNavigator');
       } else {
         Toast.show({
           type: 'error',
@@ -204,7 +204,7 @@ const LoginScreen = () => {
                       {/* Email */}
                       <View style={styles.inputContainer}>
                         <Icon
-                          name="mail-outline"
+                          name="email-outline"
                           size={width * 0.06}
                           style={styles.icon}
                         />
@@ -226,7 +226,7 @@ const LoginScreen = () => {
                       {/* Password */}
                       <View style={styles.inputContainer}>
                         <Icon
-                          name="lock-closed-outline"
+                          name="lock-outline"
                           size={width * 0.06}
                           style={styles.icon}
                         />
@@ -299,7 +299,7 @@ const LoginScreen = () => {
                         <>
                           <View style={styles.inputContainer}>
                             <Icon
-                              name="mail-outline"
+                              name="email-outline"
                               size={width * 0.06}
                               style={styles.icon}
                             />
@@ -347,7 +347,7 @@ const LoginScreen = () => {
                           {/* New Password */}
                           <View style={styles.inputContainer}>
                             <Icon
-                              name="lock-closed-outline"
+                              name="lock-outline"
                               size={width * 0.06}
                               style={styles.icon}
                             />
@@ -379,7 +379,7 @@ const LoginScreen = () => {
                           {/* Confirm Password */}
                           <View style={styles.inputContainer}>
                             <Icon
-                              name="lock-closed-outline"
+                              name="lock-outline"
                               size={width * 0.06}
                               style={styles.icon}
                             />
