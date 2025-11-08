@@ -15,14 +15,14 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store/index';
-import { Field, Formik } from 'formik';
+import {Formik } from 'formik';
 import * as yup from 'yup';
 import Toast from 'react-native-toast-message';
 import apiCall from '../../services/api';
 import { setUser, addBank, removeBank } from '../../store/auth/userSlice';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import DatePickerInput from '../../components/Calendar';
+import { Bank } from '../../store/auth/userSlice';
 
 interface EditUserValues {
   name: string;
@@ -68,6 +68,7 @@ const EditUserScreen = () => {
 
   const [loading, setLoading] = useState(false);
   const [bankLoading, setBankLoading] = useState(false);
+  const [showAddBankForm, setShowAddBankForm] = useState(false);
 
   const initialValues: EditUserValues = {
     name: user?.name || '',
@@ -79,23 +80,18 @@ const EditUserScreen = () => {
     dob: user?.dob ? new Date(user.dob).toISOString().slice(0, 10) : '',
   };
 
-  // progressive formatter (non-blocking)
-  const formatDateInput = text => {
-    const cleaned = text.replace(/\D/g, ''); // only digits
+  const formatDateInput = (text: string) => {
+    const cleaned = text.replace(/\D/g, '');
 
     const y = cleaned.slice(0, 4);
     const m = cleaned.slice(4, 6);
     const d = cleaned.slice(6, 8);
 
-    // less than or equal to year
     if (cleaned.length <= 4) return y;
 
-    // year + 1 digit of month -> keep single digit month (no validation/pad)
     if (cleaned.length === 5) {
-      return `${y}-${m}`; // m is single digit here
+      return `${y}-${m}`;
     }
-
-    // year + 2 digits of month -> validate month (00 -> 01, >12 -> 12)
     if (cleaned.length === 6) {
       let monthNum = parseInt(m, 10);
       if (isNaN(monthNum)) return `${y}-`;
@@ -104,16 +100,12 @@ const EditUserScreen = () => {
       const month = String(monthNum).padStart(2, '0');
       return `${y}-${month}`;
     }
-
-    // year + month + 1 digit of day -> show partial day
     if (cleaned.length === 7) {
-      const monthStr = m; // two digits already present
-      return `${y}-${monthStr}-${d}`; // d is single digit
+      const monthStr = m;
+      return `${y}-${monthStr}-${d}`;
     }
-
-    // full YYYYMMDD or longer -> take only first 8 digits and validate day
     if (cleaned.length >= 8) {
-      const monthNum = Math.max(1, Math.min(12, parseInt(m, 10) || 1)); // safe month
+      const monthNum = Math.max(1, Math.min(12, parseInt(m, 10) || 1));
       const yearNum = parseInt(y, 10) || 1970;
       const maxDays = new Date(yearNum, monthNum, 0).getDate();
       let dayNum = parseInt(d, 10) || 1;
@@ -128,16 +120,15 @@ const EditUserScreen = () => {
     return text;
   };
 
-  const fetchBanks = async () => {
+  const fetchBanks = React.useCallback(async () => {
     try {
-      setBankLoading(true);
       const res = await apiCall(`/api/bank/${user?._id}`, {
         method: 'GET',
         token,
       });
 
       if (res.success) {
-        dispatch(setUser({ ...user, bankDetails: res.banks }));
+        dispatch(setUser({ ...(user as any), bankDetails: res.banks }));
       } else {
         Toast.show({
           type: 'error',
@@ -152,13 +143,12 @@ const EditUserScreen = () => {
         text2: error.message || 'Unable to fetch banks',
       });
     } finally {
-      setBankLoading(false);
     }
-  };
+  }, [user, token, dispatch]);
 
   useEffect(() => {
     if (user?._id) fetchBanks();
-  }, [user?._id]);
+  }, [user?._id, fetchBanks]);
 
   const handleSubmit = async (values: EditUserValues) => {
     try {
@@ -387,23 +377,35 @@ const EditUserScreen = () => {
           </Formik>
 
           {/* ---- Bank Section ---- */}
-          <Text style={styles.sectionTitle}>Bank Accounts</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Bank Accounts</Text>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => setShowAddBankForm(prev => !prev)}
+            >
+              <Ionicons
+                name={showAddBankForm ? 'remove-circle-outline' : 'add-circle-outline'}
+                size={28}
+                color="#4960F9"
+              />
+            </TouchableOpacity>
+          </View>
 
           <FlatList
             data={user?.bankDetails || []}
-            keyExtractor={item => item._id}
+            keyExtractor={(item: Bank) => item._id}
             contentContainerStyle={{ paddingBottom: 20 }}
-            renderItem={({ item }) => (
+            renderItem={({ item }: { item: Bank }) => (
               <View style={styles.bankCard}>
                 <View style={styles.bankInfo}>
-                  <Text style={styles.bankName}>{item?.bankName}</Text>
+                  <Text style={styles.bankName}>{item.bankName}</Text>
                   <Text style={styles.accountText}>
-                    {item?.accountHolderName} •{' '}
-                    {item?.accountNumber
+                    {item.accountHolderName} •{' '}
+                    {item.accountNumber
                       ? item.accountNumber.replace(/\d(?=\d{4})/g, '*')
                       : 'N/A'}
                   </Text>
-                  <Text style={styles.ifscText}>IFSC: {item?.ifscCode}</Text>
+                  <Text style={styles.ifscText}>IFSC: {item.ifscCode}</Text>
                 </View>
                 <TouchableOpacity
                   style={styles.deleteButton}
@@ -421,99 +423,101 @@ const EditUserScreen = () => {
           />
 
           {/* ---- Add Bank Form ---- */}
-          <Formik
-            initialValues={{
-              accountHolderName: '',
-              accountNumber: '',
-              ifscCode: '',
-              bankName: '',
-              branch: '',
-            }}
-            validationSchema={bankValidationSchema}
-            onSubmit={(values, { resetForm }) =>
-              handleAddBank(values, resetForm)
-            }
-          >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-            }) => (
-              <View style={styles.form}>
-                <Text style={styles.sectionTitle}>Add Bank Account</Text>
+          {showAddBankForm && (
+            <Formik
+              initialValues={{
+                accountHolderName: '',
+                accountNumber: '',
+                ifscCode: '',
+                bankName: '',
+                branch: '',
+              }}
+              validationSchema={bankValidationSchema}
+              onSubmit={(values, { resetForm }) =>
+                handleAddBank(values, resetForm)
+              }
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <View style={styles.form}>
+                  <Text style={styles.sectionTitle}>Add Bank Account</Text>
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="Account Holder Name"
-                  onChangeText={handleChange('accountHolderName')}
-                  onBlur={handleBlur('accountHolderName')}
-                  value={values.accountHolderName}
-                />
-                {touched.accountHolderName && errors.accountHolderName && (
-                  <Text style={styles.errorText}>
-                    {errors.accountHolderName}
-                  </Text>
-                )}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Account Number"
-                  keyboardType="number-pad"
-                  onChangeText={handleChange('accountNumber')}
-                  onBlur={handleBlur('accountNumber')}
-                  value={values.accountNumber}
-                />
-                {touched.accountNumber && errors.accountNumber && (
-                  <Text style={styles.errorText}>{errors.accountNumber}</Text>
-                )}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="IFSC Code"
-                  onChangeText={handleChange('ifscCode')}
-                  onBlur={handleBlur('ifscCode')}
-                  value={values.ifscCode}
-                />
-                {touched.ifscCode && errors.ifscCode && (
-                  <Text style={styles.errorText}>{errors.ifscCode}</Text>
-                )}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Bank Name"
-                  onChangeText={handleChange('bankName')}
-                  onBlur={handleBlur('bankName')}
-                  value={values.bankName}
-                />
-                {touched.bankName && errors.bankName && (
-                  <Text style={styles.errorText}>{errors.bankName}</Text>
-                )}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Branch (optional)"
-                  onChangeText={handleChange('branch')}
-                  onBlur={handleBlur('branch')}
-                  value={values.branch}
-                />
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleSubmit()}
-                  disabled={bankLoading}
-                >
-                  {bankLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.buttonText}>Add Bank</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Account Holder Name"
+                    onChangeText={handleChange('accountHolderName')}
+                    onBlur={handleBlur('accountHolderName')}
+                    value={values.accountHolderName}
+                  />
+                  {touched.accountHolderName && errors.accountHolderName && (
+                    <Text style={styles.errorText}>
+                      {errors.accountHolderName}
+                    </Text>
                   )}
-                </TouchableOpacity>
-              </View>
-            )}
-          </Formik>
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Account Number"
+                    keyboardType="number-pad"
+                    onChangeText={handleChange('accountNumber')}
+                    onBlur={handleBlur('accountNumber')}
+                    value={values.accountNumber}
+                  />
+                  {touched.accountNumber && errors.accountNumber && (
+                    <Text style={styles.errorText}>{errors.accountNumber}</Text>
+                  )}
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="IFSC Code"
+                    onChangeText={handleChange('ifscCode')}
+                    onBlur={handleBlur('ifscCode')}
+                    value={values.ifscCode}
+                  />
+                  {touched.ifscCode && errors.ifscCode && (
+                    <Text style={styles.errorText}>{errors.ifscCode}</Text>
+                  )}
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Bank Name"
+                    onChangeText={handleChange('bankName')}
+                    onBlur={handleBlur('bankName')}
+                    value={values.bankName}
+                  />
+                  {touched.bankName && errors.bankName && (
+                    <Text style={styles.errorText}>{errors.bankName}</Text>
+                  )}
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Branch (optional)"
+                    onChangeText={handleChange('branch')}
+                    onBlur={handleBlur('branch')}
+                    value={values.branch}
+                  />
+
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleSubmit()}
+                    disabled={bankLoading}
+                  >
+                    {bankLoading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.buttonText}>Add Bank</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -558,7 +562,16 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontWeight: '600' },
   errorText: { color: 'red', marginBottom: 8 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginVertical: 15 },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  sectionTitle: { fontSize: 18, fontWeight: '600', paddingBottom:12},
+  addButton: {
+    padding: 5,
+  },
   bankCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',

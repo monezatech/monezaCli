@@ -8,7 +8,7 @@ interface Address {
   zip: string;
 }
 
-interface Bank {
+export interface Bank { // Export the Bank interface
   _id: string;
   accountHolderName: string;
   accountNumber: string;

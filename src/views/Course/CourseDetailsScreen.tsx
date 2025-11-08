@@ -16,7 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import VideoStreamingScreen from '../../components/courseSection/VideoStreaming';
 import LectureItem from '../../components/courseSection/LectureItem';
-import { apiService } from '../../service/service';
+import { apiService } from '../../services/service';
 import { useSelector, TypedUseSelectorHook, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import * as Progress from 'react-native-progress';
@@ -24,6 +24,7 @@ import { setCourse } from '../../store/selectedCourseSlice';
 
 export const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
 
+// Enable LayoutAnimation on Android
 if (
   Platform.OS === 'android' &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -33,55 +34,100 @@ if (
 
 const CourseDetailsScreen = () => {
   const [courses, setCourses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [video, setVideo] = useState<string | null>(null);
   const [thumb, setThumb] = useState<string | null>(null);
   const [currentLessonId, setCurrentLessonId] = useState<string | null>(null);
-  const [hasPurchased, setHasPurchased] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState<boolean>(false);
 
   const token = useTypedSelector(state => state.auth.token);
   const refCourse = useTypedSelector(state => state.globalState.id);
 
-  const navigation = useNavigation();
+  const navigation: any = useNavigation(); // cast to any to avoid TS nav typing issues in this snippet
   const dispatch = useDispatch();
 
   const getCourseLessons = async () => {
+    if (!refCourse) {
+      // no course id available yet
+      setCourses([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await apiService.getLessonById({ token, refCourse });
-      setCourses(res.lessons);
 
-      if (res.lessons.length > 0) {
-        setVideo(res.lessons[0].videoUrl);
-        setThumb(res.lessons[0].thumbUrl);
-        setCurrentLessonId(res.lessons[0]._id);
+      // Defensive checks
+      const lessons = Array.isArray(res?.lessons) ? res.lessons : [];
+      setCourses(lessons);
+
+      // If API returns purchase status, set it; fallback false
+      if (typeof res?.hasPurchased === 'boolean') {
+        setHasPurchased(res.hasPurchased);
+      } else {
+        // fallback or determine purchase from response
+        setHasPurchased(false);
+      }
+
+      if (lessons.length > 0) {
+        const first = lessons[0];
+        setVideo(first.videoUrl ?? null);
+        setThumb(first.thumbUrl ?? null);
+        setCurrentLessonId(first._id ?? null);
+      } else {
+        // reset if no lessons
+        setVideo(null);
+        setThumb(null);
+        setCurrentLessonId(null);
       }
     } catch (error) {
       console.log('Error fetching courses', error);
+      Alert.alert('Error', 'Unable to fetch course lessons. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    // fetch whenever token or refCourse changes
+    getCourseLessons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, refCourse]);
+
   const handleLecturePress = (item: any, index: number) => {
-    if (index === 0 || hasPurchased) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setVideo(item.videoUrl);
-      setThumb(item.thumbUrl);
-      setCurrentLessonId(item._id);
-    } else {
+    const locked = index !== 0 && !hasPurchased;
+
+    if (locked) {
       Alert.alert('Locked', 'Buy the course to unlock this lecture.');
+      return;
     }
+
+    // Animate and set the selected video
+    try {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    } catch (e) {
+      // LayoutAnimation can throw on some platforms - ignore safely
+      // console.log('LayoutAnimation error', e);
+    }
+
+    setVideo(item.videoUrl ?? null);
+    setThumb(item.thumbUrl ?? null);
+    setCurrentLessonId(item._id ?? null);
   };
 
-  const buyCourse = (course: any) => {
-    dispatch(setCourse(course));
+  const buyCourse = (course: any | null) => {
+    // If you want to dispatch whole course object, pass a proper object; otherwise pass id
+    if (course && typeof course === 'object') {
+      dispatch(setCourse(course));
+    } else if (refCourse) {
+      // fallback: dispatch minimal info
+      dispatch(setCourse({ id: refCourse }));
+    }
+
+    // Navigate to Buy screen, with some params if needed
     navigation.navigate('BuyNowScreen' as never);
   };
-
-  useEffect(() => {
-    getCourseLessons();
-  }, [token]);
 
   const completedLectures = courses.filter(c => c?.watched === true).length;
   const progress = courses.length > 0 ? completedLectures / courses.length : 0;
@@ -132,18 +178,26 @@ const CourseDetailsScreen = () => {
       <ScrollView style={styles.content}>
         <Text style={styles.sectionHeaderText}>Course Lectures</Text>
 
+        {courses.length === 0 && (
+          <View style={{ padding: 16 }}>
+            <Text style={{ color: '#666' }}>
+              No lessons found for this course.
+            </Text>
+          </View>
+        )}
+
         {courses.map((item, index) => {
           const locked = index !== 0 && !hasPurchased;
           return (
             <TouchableOpacity
-              key={item._id}
+              key={item._id ?? `lesson-${index}`}
               onPress={() => handleLecturePress(item, index)}
               style={[styles.lectureCard, locked && { opacity: 0.7 }]}
               disabled={locked}
             >
               <LectureItem
                 number={index + 1}
-                title={item.title}
+                title={item.title ?? 'Untitled'}
                 type={item.type}
                 accessType={locked ? 'locked' : 'unlocked'}
                 duration={item.duration}
@@ -167,7 +221,8 @@ const CourseDetailsScreen = () => {
         <View style={styles.buyContainer}>
           <TouchableOpacity
             style={styles.buyButton}
-            onPress={() => buyCourse(courses)}
+            onPress={() => buyCourse(courses[0] ?? null)}
+            disabled={courses.length === 0}
           >
             <MaterialIcons
               name="shopping-cart"

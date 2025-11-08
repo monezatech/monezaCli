@@ -1,7 +1,6 @@
-import axios from "axios";
-
 // const BASE_URL = "https://moneza-backend.onrender.com";
 const BASE_URL = 'http://192.168.1.37:8000';
+import axios from "axios"; // Keep axios import here for direct usage
 
 const apiCall = async (endpoint, options = {}) => {
   const {
@@ -32,7 +31,9 @@ const apiCall = async (endpoint, options = {}) => {
     const response = await axios(axiosConfig);
     return response.data;
   } catch (error) {
-    console.error("API Call Error:", error.message);
+    // The interceptor in App.tsx will handle 401 errors globally.
+    // Other errors can still be logged or re-thrown here if needed.
+    console.error("API Call Error in api.js:", error.message);
 
     if (error.response) {
       console.error("Response Data:", error.response.data);
