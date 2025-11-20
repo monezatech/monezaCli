@@ -1198,6 +1198,15 @@ PODS:
   - BoringSSL-GRPC/Interface (0.0.37)
   - BVLinearGradient (2.8.3):
     - React-Core
+  - CashfreeAnalyticsSDK (2.2.0):
+    - CFNetworkSDK (= 2.2.0)
+  - CashfreePG (2.2.4):
+    - CashfreePGUISDK (= 2.2.4)
+  - CashfreePGCoreSDK (2.2.4):
+    - CashfreeAnalyticsSDK (= 2.2.0)
+  - CashfreePGUISDK (2.2.4):
+    - CashfreePGCoreSDK (= 2.2.4)
+  - CFNetworkSDK (2.2.0)
   - DoubleConversion (1.1.6)
   - fast_float (6.1.4)
   - FBLazyVector (0.79.7)
@@ -2824,6 +2833,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-cashfree-pg-sdk (2.2.5):
+    - CashfreePG (= 2.2.4)
+    - React-Core
   - react-native-safe-area-context (5.6.2):
     - DoubleConversion
     - glog
@@ -2964,6 +2976,30 @@ PODS:
     - React-ImageManager
     - React-jsi
     - react-native-video/Fabric
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-webview (13.16.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3734,8 +3770,10 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-cashfree-pg-sdk (from `../node_modules/react-native-cashfree-pg-sdk`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -3786,6 +3824,11 @@ SPEC REPOS:
     - abseil
     - BEMCheckBox
     - BoringSSL-GRPC
+    - CashfreeAnalyticsSDK
+    - CashfreePG
+    - CashfreePGCoreSDK
+    - CashfreePGUISDK
+    - CFNetworkSDK
     - Firebase
     - FirebaseAnalytics
     - FirebaseAppCheckInterop
@@ -3897,10 +3940,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-cashfree-pg-sdk:
+    :path: "../node_modules/react-native-cashfree-pg-sdk"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
     :path: "../node_modules/react-native-video"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3994,6 +4041,11 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   BoringSSL-GRPC: dded2a44897e45f28f08ae87a55ee4bcd19bc508
   BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
+  CashfreeAnalyticsSDK: ae25b71a54607c920d519103d154d9727ca2c15a
+  CashfreePG: 6554c215b8eabc9fa13e59c847262b8ba6f29ff6
+  CashfreePGCoreSDK: 133e1ba5aeb8a89bf2188eb3312c88fcad084c75
+  CashfreePGUISDK: 5e943fcca20c45b66c9837bbb87ebbfb75c013a5
+  CFNetworkSDK: 4e431b55f607544f5ca45bc1a36a13e602f51841
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: b60fe06f0f15b7d7408f169442176e69e8eeacde
@@ -4056,8 +4108,10 @@ SPEC CHECKSUMS:
   React-Mapbuffer: c7fdcd8e297435045947a4e6c0824fcb831fb5c7
   React-microtasksnativemodule: aa6b872c40429aa7b4bce78ec34fe8e89c45481a
   react-native-blur: 77d93dcc4aabc9ea137278b49dbb2dc005ad236b
+  react-native-cashfree-pg-sdk: 1641b1e1fa40daaa325accb8c615224075e1704b
   react-native-safe-area-context: 599ee84bd389d2a4230ab7b832fb1354f8eedaec
   react-native-video: 0078f36d5424cfdd6567fa2ee277aa269c975180
+  react-native-webview: f0d598682cbc88a97d66da4121873d3467f76635
   React-NativeModulesApple: 889490414c604f57066540e84e7bd8f672dac9b0
   React-oscompat: 0047f0ce53a328ce225777a6c617970556602c7c
   React-perflogger: bf00d816c3c3ad91658b44f93ce9ee343b4c70df

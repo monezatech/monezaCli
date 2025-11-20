@@ -1,5 +1,6 @@
 import axios from "axios";
 import apiCall from "./api";
+import Toast from 'react-native-toast-message'; // Import Toast
 
 export const apiService = {
   registerUser: (data) =>
@@ -78,6 +79,7 @@ export const apiService = {
         body: JSON.stringify({
           courseId,
         }),
+        ignoreAuthError: true, // Ignore 401 errors for this specific call
       });
 
       return response;
@@ -153,7 +155,7 @@ export const apiService = {
     return res.json();
   },
 
-  getCoursesByCategoryId: async ({ categoryId }) => {
+  getCoursesByCategoryId: async ({ token, categoryId }) => { // Add token parameter
     const res = await apiCall(`/api/course/category/${categoryId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });

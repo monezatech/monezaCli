@@ -162,7 +162,7 @@ const BuyNowScreen: React.FC = () => {
   useEffect(() => {
     console.log('user?._id', user?._id);
     if (user?._id) fetchBanks();
-  }, [user?._id]);
+  }, [user?._id, fetchBanks]); // Add fetchBanks to dependency array
 
   // When user selects a saved bank (fill the bank form)
   const selectSavedBank = (bankId: string | null) => {
@@ -308,6 +308,7 @@ const BuyNowScreen: React.FC = () => {
             method: 'POST',
             token: tokenLocal,
             body: payload,
+            ignoreAuthError: true, // Ignore 401 errors for this specific call
           });
           setPayLoading(false);
           if (res.success) {

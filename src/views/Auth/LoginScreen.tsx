@@ -26,9 +26,15 @@ import GradientButton from '../../components/GradientButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import icon from '../../assets/images/loginpage.png';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../../navigation/RootNavigator'; // Import RootStackParamList
 
 const { width, height } = Dimensions.get('window');
+
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
 
 const loginValidationSchema = yup.object().shape({
   email: yup
@@ -43,7 +49,7 @@ const loginValidationSchema = yup.object().shape({
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -59,7 +65,7 @@ const LoginScreen = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // =============== LOGIN ===============
-  const handleLogin = async values => {
+  const handleLogin = async (values: LoginFormValues) => {
     try {
       setLoading(true);
       const response = await apiService.loginUser(values);
@@ -76,7 +82,7 @@ const LoginScreen = () => {
           text2: response.message || 'Welcome back!',
         });
 
-        navigation.navigate('BottomTabNavigator');
+        navigation.navigate('DrawerNavigator');
       } else {
         Toast.show({
           type: 'error',
@@ -84,7 +90,7 @@ const LoginScreen = () => {
           text2: response?.message || 'Invalid credentials',
         });
       }
-    } catch (error) {
+    } catch (error: any) { // Cast error to any for now
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
@@ -239,7 +245,7 @@ const LoginScreen = () => {
                           onBlur={handleBlur('password')}
                           value={values.password}
                           returnKeyType="done"
-                          onSubmitEditing={handleSubmit}
+                          onSubmitEditing={() => handleSubmit()} // Call handleSubmit as a function
                         />
                         <TouchableOpacity
                           onPress={() => setShowPassword(!showPassword)}
