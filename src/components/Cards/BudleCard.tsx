@@ -6,13 +6,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { setId } from '../../store/auth/globalStateSlice';
 import LinearGradient from 'react-native-linear-gradient';
 
-const BundleCard = ({ bundle }) => {
+const BundleCard = ({ bundle }: { bundle: any }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const handlePress = () => {
     dispatch(setId(bundle._id));
-    navigation.navigate('bundleDetail'); // navigate to bundle detail screen
+    navigation.navigate('BundleDetailScreen', { bundle }); // navigate to bundle detail screen
   };
 
   return (

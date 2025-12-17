@@ -55,22 +55,7 @@ const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // Type the navigation hook
   const dispatch = useDispatch();
 
-  const separateCoursesByType = useCallback((courses: Course[]) => {
-    const bundles: Course[] = [];
-    const others: Course[] = [];
-    courses.forEach((course: Course) => {
-      if (course.category?.name === 'Bundle') {
-        // Assuming 'type' property identifies bundle courses
-        bundles.push(course);
-      } else {
-        others.push(course);
-      }
-    });
-    console.log('Bundle', bundles);
-    console.log('Others', others);
 
-    return { bundles, others };
-  }, []); // No external dependencies
 
   const groupByCategory = useCallback(
     (courses: Course[]): GroupedCategory[] => {
@@ -99,19 +84,28 @@ const HomeScreen = () => {
   const getCourses = useCallback(
     async (token: string | null) => {
       try {
-        setLoading(true);
         const res = await apiService.getCourses({ token });
-        const { bundles, others } = separateCoursesByType(res.courses || []);
-        setBundleCourses(bundles); // Set all bundle courses
-        const grouped = groupByCategory(others);
+        const grouped = groupByCategory(res.courses || []);
         setGroupedCourses(grouped);
       } catch (error) {
         console.log('Error fetching courses:', error);
-      } finally {
-        setLoading(false);
       }
     },
-    [separateCoursesByType, groupByCategory],
+    [groupByCategory],
+  ); // Add dependencies for useCallback
+
+  const getBundles = useCallback(
+    async (token: string | null) => {
+      try {
+        const res = await apiService.getBundles({ token });
+        console.log('Bundles API response:', res);
+        setBundleCourses(res.bundles || []); // Set all bundles directly
+        console.log('Bundle courses set:', res.bundles?.length || 0);
+      } catch (error) {
+        console.log('Error fetching bundles:', error);
+      }
+    },
+    [],
   ); // Add dependencies for useCallback
 
   const getLoggedUser = useCallback(async () => {
@@ -120,12 +114,14 @@ const HomeScreen = () => {
       const res = await apiService.getLoggedUser({ token });
       setUserr(res.user);
       dispatch(setUser(res.user));
-      getCourses(token);
+      setLoading(true);
+      await Promise.all([getCourses(token), getBundles(token)]);
     } catch (error) {
       console.log('User fetch error:', error);
+    } finally {
       setLoading(false);
     }
-  }, [dispatch, getCourses]); // Added dispatch and getCourses to useCallback dependencies
+  }, [dispatch, getCourses, getBundles]); // Added dispatch and getCourses to useCallback dependencies
 
   useEffect(() => {
     getLoggedUser();
@@ -138,7 +134,7 @@ const HomeScreen = () => {
 
         {/* Top Bar Section */}
         <View style={styles.topBar}>
-          <TopBar image={user} />
+          <TopBar />
         </View>
 
         {/* Courses Section */}
@@ -150,7 +146,7 @@ const HomeScreen = () => {
           ) : (
             <>
               <Text style={styles.headtext}>
-                {bundleCourses[0]?.category?.name}
+                Bundles
               </Text>
               {bundleCourses.length > 0 && (
                 <View style={styles.bundleCoursesListContainer}>
@@ -232,6 +228,7 @@ const styles = StyleSheet.create({
   headtext: {
     fontSize: 18,
     fontWeight: '600',
+    marginVertical: 10,
   },
   seeMore: {
     fontSize: 14,

@@ -42,25 +42,30 @@ function AppContent() {
 
     checkAuth();
 
-    // Axios Interceptor for 401 Unauthorized
-    const interceptor = axios.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        if (error.response && error.response.status === 401) {
-          console.log('401 Unauthorized - Token expired or invalid');
-          dispatch(logout());
-          await AsyncStorage.removeItem('token');
-          await AsyncStorage.removeItem('user');
-          if (navigationRef.isReady()) {
-            navigate('LoginScreen');
-          }
-        }
-        return Promise.reject(error);
-      },
-    );
+    // Axios Interceptor for 401 Unauthorized (currently commented out)
+    // const interceptor = axios.interceptors.response.use(
+    //   (response) => response,
+    //   async (error) => {
+    //     // Check if this specific 401 error should be ignored by the global logout
+    //     // The flag is now set on error.config
+    //     if (error.response && error.response.status === 401 && error.config && !error.config._ignoreAuthError) {
+    //       console.log('401 Unauthorized - Token expired or invalid, triggering global logout');
+    //       dispatch(logout());
+    //       await AsyncStorage.removeItem('token');
+    //       await AsyncStorage.removeItem('user');
+    //       if (navigationRef.isReady()) {
+    //         navigate('LoginScreen');
+    //       }
+    //     }
+    //     return Promise.reject(error);
+    //   },
+    // );
 
     return () => {
-      axios.interceptors.response.eject(interceptor);
+      // Only eject if interceptor was created
+      // if (interceptor) {
+      //   axios.interceptors.response.eject(interceptor);
+      // }
     };
   }, [dispatch]);
 

@@ -1,20 +1,19 @@
 import axios from "axios";
 import apiCall from "./api";
+import Toast from 'react-native-toast-message'; // Import Toast
 
 export const apiService = {
-  registerUser: (data) =>
-    apiCall(
-      '/api/user/register', { method: "POST", data }),
+  registerUser: data => apiCall('/api/user/register', { method: 'POST', data }),
 
-  loginUser: (data) => apiCall("/api/user/login", { method: "POST", data }),
+  loginUser: data => apiCall('/api/user/login', { method: 'POST', data }),
 
-  changePassword: (data) =>
-    apiCall('/api/user/changepassword', { method: "POST", data }),
+  changePassword: data =>
+    apiCall('/api/user/changepassword', { method: 'POST', data }),
 
   getLoggedUser: async ({ token }) => {
     try {
-      const response = await apiCall("/api/user/loggeduser", {
-        method: "GET",
+      const response = await apiCall('/api/user/loggeduser', {
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -28,7 +27,7 @@ export const apiService = {
   getCourses: async ({ token }) => {
     try {
       const response = await apiCall('/api/course/courseswithcatrgory', {
-        method: "GET",
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -39,10 +38,61 @@ export const apiService = {
     }
   },
 
+  getBundles: async ({ token }) => {
+    try {
+      const response = await apiCall('/api/bundle/bundles', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching bundles:', error);
+      throw error;
+    }
+  },
+
+  getBundle: async ({ token, bundleId }) => {
+    try {
+      const response = await apiCall(`/api/bundle/bundle/${bundleId}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching bundle:', error);
+      throw error;
+    }
+  },
+
+  purchaseBundle: async ({ token, bundleId, amount, referralCode }) => {
+    try {
+      const response = await apiCall('/api/bundle/purchase', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bundleId,
+          amount,
+          referralCode: referralCode || '',
+        }),
+        ignoreAuthError: true,
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error purchasing bundle:', error);
+      throw error;
+    }
+  },
+
   getCourse: async ({ token, courseId }) => {
     try {
       const response = await apiCall(`/api/course/course/${courseId}`, {
-        method: "GET",
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -56,33 +106,34 @@ export const apiService = {
   getLessonById: async ({ token, refCourse }) => {
     try {
       const response = await apiCall(`/api/course/getlesson/${refCourse}`, {
-        method: "GET",
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
       return response;
     } catch (error) {
-      console.error("Error fetching lesson:", error);
+      console.error('Error fetching lesson:', error);
       throw error;
     }
   },
 
   createOrder: async ({ token, courseId }) => {
     try {
-      const response = await apiCall("/api/payment/create-order", {
-        method: "POST",
+      const response = await apiCall('/api/payment/create-order', {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // ✅ Add this line
+          'Content-Type': 'application/json', // ✅ Add this line
         },
         body: JSON.stringify({
           courseId,
         }),
+        ignoreAuthError: true, // Ignore 401 errors for this specific call
       });
 
       return response;
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.error('Error creating order:', error);
       throw error;
     }
   },
@@ -95,17 +146,17 @@ export const apiService = {
 
   verifyOtp: async ({ email, otp }) => {
     try {
-      const response = await apiCall("/api/otp/verify-otp", {
-        method: "POST",
+      const response = await apiCall('/api/otp/verify-otp', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         data: { email, otp }, // ✅ Make sure both are included
       });
 
       return response;
     } catch (error) {
-      console.error("Error verifying OTP:", error);
+      console.error('Error verifying OTP:', error);
       throw error;
     }
   },
@@ -118,42 +169,43 @@ export const apiService = {
 
   sendOtp: async ({ email }) => {
     try {
-      console.log("Sending OTP to:", email);
+      console.log('Sending OTP to:', email);
 
-      const response = await apiCall("/api/otp/send-otp", {
-        method: "POST",
+      const response = await apiCall('/api/otp/send-otp', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         data: { email },
       });
 
       return response;
     } catch (error) {
-      console.error("Error sending OTP:", error);
+      console.error('Error sending OTP:', error);
       throw error;
     }
   },
 
   markLessonWatched: async ({ token, courseId, lessonId }) => {
-    return await apiCall("/api/course/progress/mark-watched", {
-      method: "POST",
+    return await apiCall('/api/course/progress/mark-watched', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ courseId, lessonId }),
     });
   },
 
   getCategories: async ({ token }) => {
-    const res = await apiCall("/api/categories", {
+    const res = await apiCall('/api/categories', {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.json();
   },
 
-  getCoursesByCategoryId: async ({ categoryId }) => {
+  getCoursesByCategoryId: async ({ token, categoryId }) => {
+    // Add token parameter
     const res = await apiCall(`/api/course/category/${categoryId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -163,22 +215,51 @@ export const apiService = {
   deleteAccountById: async ({ token, userId }) => {
     try {
       const res = await apiCall(`/api/user/delete-account/${userId}`, {
-        method: "DELETE",
+        method: 'DELETE',
         token,
       });
 
-      if (res.status !== "success") {
-        throw new Error(res.message || "Failed to delete account");
+      if (res.status !== 'success') {
+        throw new Error(res.message || 'Failed to delete account');
       }
 
       return res;
     } catch (error) {
-      console.error("Delete account error:", error);
+      console.error('Delete account error:', error);
       Toast.show({
-        type: "error",
-        text1: "Delete failed",
-        text2: error.message || "Something went wrong",
+        type: 'error',
+        text1: 'Delete failed',
+        text2: error.message || 'Something went wrong',
       });
+      throw error;
+    }
+  },
+
+  // Purchase/Wallet APIs
+  getUserPurchases: async ({ token, page = 1, limit = 20, type = 'all' }) => {
+    try {
+      const response = await apiCall(`/api/payment/purchases?page=${page}&limit=${limit}&type=${type}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching user purchases:', error);
+      throw error;
+    }
+  },
+
+  getWalletSummary: async ({ token }) => {
+    try {
+      const response = await apiCall('/api/payment/wallet-summary', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error fetching wallet summary:', error);
       throw error;
     }
   },

@@ -12,6 +12,7 @@ const VideoStreamingScreen = ({
   endThumbnail,
   fullViewd,
 }) => {
+  console.log('VideoStreaming props:', { source, thumbnail, endThumbnail });
   const playerRef = useRef(null);
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -58,10 +59,12 @@ const VideoStreamingScreen = ({
     }
   };
 
+  const hasVideo = source && source.trim() !== '';
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.videoWrapper}>
-        {!showEndThumbnail ? (
+        {/* {hasVideo && !showEndThumbnail ? (
           <Video
             ref={playerRef}
             source={{ uri: source }}
@@ -72,15 +75,35 @@ const VideoStreamingScreen = ({
             onProgress={handleProgress}
             onLoad={handleLoad}
             onEnd={handleEnd}
-            onError={error => console.error('Video Error:', error)}
+            onError={error => {
+              console.error('Video Error:', error);
+              // On error, show thumbnail
+              setShowEndThumbnail(true);
+            }}
           />
         ) : (
           <FastImage
-            source={{ uri: endThumbnail || thumbnail }}
+            source={{ uri: endThumbnail || thumbnail || 'default_thumbnail_url' }}
             style={styles.thumbnail}
             resizeMode={FastImage.resizeMode.cover}
           />
-        )}
+        )} */}
+        <Video
+          ref={playerRef}
+          source={{ uri: source }}
+          style={styles.video}
+          controls
+          resizeMode="contain"
+          paused={paused}
+          onProgress={handleProgress}
+          onLoad={handleLoad}
+          onEnd={handleEnd}
+          onError={error => {
+            console.error('Video Error:', error);
+            // On error, show thumbnail
+            setShowEndThumbnail(true);
+          }}
+        />
       </View>
     </SafeAreaView>
   );

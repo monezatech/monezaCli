@@ -1,20 +1,38 @@
+/*
+ * This is the configuration block to customize your React Native Android app.
+ * Use this section to add third-party plugins, for example list native
+ * libraries that are needed for the project.
+ */
 buildscript {
     ext {
+        // Platform / compile versions (keep in sync with your rootProject ext usage)
         buildToolsVersion = "36.0.0"
         minSdkVersion = 24
         compileSdkVersion = 36
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.1.20"
+
+        // Kotlin version used by the Kotlin Gradle Plugin
+        kotlinVersion = "1.9.24"
+
+        // Android Gradle Plugin compatible with Gradle 8.6
+        agpVersion = "8.2.2"
     }
+
     repositories {
         google()
         mavenCentral()
     }
+
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        // explicit AGP
+        classpath("com.android.tools.build:gradle:${agpVersion}")
+
+        // kotlin gradle plugin pinned to 1.9.24
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+
+        // React Native Gradle Plugin (leave unspecified version so it uses node_modules plugin)
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 

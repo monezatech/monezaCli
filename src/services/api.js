@@ -1,5 +1,9 @@
+// Production backend URL
 // const BASE_URL = "https://moneza-backend.onrender.com";
-const BASE_URL = 'http://192.168.1.37:8000';
+// For development/testing:
+// For Android emulator, use 10.0.2.2 to reach host machine
+// For physical device, use your computer's local IP address
+const BASE_URL = 'http://192.168.1.23:8000';
 import axios from "axios"; // Keep axios import here for direct usage
 
 const apiCall = async (endpoint, options = {}) => {
@@ -9,6 +13,7 @@ const apiCall = async (endpoint, options = {}) => {
     params = {},
     headers = {},
     token = null,
+    ignoreAuthError = false, // New option to ignore 401 for specific calls
   } = options;
 
   const apiHeaders = {
@@ -31,8 +36,14 @@ const apiCall = async (endpoint, options = {}) => {
     const response = await axios(axiosConfig);
     return response.data;
   } catch (error) {
-    // The interceptor in App.tsx will handle 401 errors globally.
-    // Other errors can still be logged or re-thrown here if needed.
+    // If ignoreAuthError is true, we add a custom property to the error
+    // so the global interceptor in App.tsx can identify and ignore it.
+    // If ignoreAuthError is true, we add a custom property to the error's config
+    // so the global interceptor in App.tsx can identify and ignore it.
+    if (ignoreAuthError && error.response && error.response.status === 401) {
+      error.config._ignoreAuthError = true; // Set on error.config instead of error.response.config
+    }
+
     console.error("API Call Error in api.js:", error.message);
 
     if (error.response) {
