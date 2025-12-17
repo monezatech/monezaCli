@@ -3,8 +3,8 @@ import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const TopBar = ({ image = true }) => {
-  const navigation = useNavigation();
+const TopBar = () => {
+  const navigation = useNavigation() as any;
 
   return (
     <View style={styles.container}>
@@ -17,13 +17,14 @@ const TopBar = ({ image = true }) => {
         <MaterialCommunityIcons name="menu" size={34} color="#ffffff" />
       </TouchableOpacity>
 
-      {/* Profile Image */}
-      {image && (
-        <Image
-          source={require('../assets/images/user.jpg')}
-          style={styles.profilePicture}
-        />
-      )}
+      {/* Wallet Icon */}
+      <TouchableOpacity
+        onPress={() => navigation.navigate('WalletScreen')}
+        style={styles.walletButton}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons name="wallet" size={34} color="#ffffff" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -37,6 +38,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#4960F9', // you can adjust this as per theme
   },
   menuButton: {
+    padding: 5,
+  },
+  walletButton: {
     padding: 5,
   },
   profilePicture: {

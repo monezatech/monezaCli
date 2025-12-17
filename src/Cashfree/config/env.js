@@ -8,11 +8,12 @@ import { PRODUCTION_CONFIG } from './production.config.js';
 const CURRENT_ENVIRONMENT = 'TEST'; // Changed to TEST for payout testing
 
 export const ENV_CONFIG = {
-  // Cashfree App Credentials - TEST SETUP FOR PAYOUT TESTING
-  // IMPORTANT: Replace these with your actual Cashfree Payout Sandbox credentials.
-  // These are placeholders and will not work for real payouts.
-  CASHFREE_APP_ID: 'CF986624D491J1D4362S73FH22LG', // Placeholder for Payout Test App ID
-  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_15419a8f21de58224d4f71b0411f31e9_925dba9e', // Placeholder for Payout Test Secret Key
+  // Cashfree App Credentials - TEST SETUP
+  // IMPORTANT: Replace these with your actual Cashfree TEST credentials from Cashfree Dashboard
+  // Go to: https://merchant.cashfree.com/merchant/pg/app/apps → Create Test App
+  // For now, using placeholder - you need to replace these with real credentials
+  CASHFREE_APP_ID: 'CF986624D491J1D4362S73FH22LG', // ⚠️ REPLACE WITH YOUR TEST APP ID
+  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_15419a8f21de58224d4f71b0411f31e9_925dba9e', // ⚠️ REPLACE WITH YOUR TEST SECRET KEY
 
   // Environment (TEST for sandbox, PROD for production)
   ENVIRONMENT: CURRENT_ENVIRONMENT,
@@ -24,7 +25,7 @@ export const ENV_CONFIG = {
   },
 
   // Your backend URLs - TEST SETUP for Cashfree sandbox
-  BACKEND_BASE_URL: 'http://192.168.1.3:8000', // Assuming local backend for test
+  BACKEND_BASE_URL: 'http://192.168.1.23:8000', // Assuming local backend for test
   PAYMENT_SUCCESS_URL:
     'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
   PAYMENT_FAILURE_URL:

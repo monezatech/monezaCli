@@ -13,6 +13,8 @@ import BuyNowScreen from '../views/Payments/BuyNowScreen';
 import CourseDetailsScreen from '../views/Course/CourseDetailsScreen';
 import EditUserScreen from '../views/User/EditUser';
 import MainNavigation from '../Cashfree/components/MainNavigation';
+import BundleDetailScreen from '../views/BundleDetailScreen';
+import WalletScreen from '../views/WalletScreen';
 
 export type RootStackParamList = {
   DrawerNavigator: undefined;
@@ -28,6 +30,8 @@ export type RootStackParamList = {
   CourseDetailsScreen: undefined;
   EditUserScreen: undefined;
   MainNavigation : undefined;
+  BundleDetailScreen: { bundle: any };
+  WalletScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -71,6 +75,8 @@ export default function RootNavigator({ initialRouteName, toggleTheme }: RootNav
       />
       <Stack.Screen name="EditUserScreen" component={EditUserScreen} />
       <Stack.Screen name="MainNavigation" component={MainNavigation} />
+      <Stack.Screen name="BundleDetailScreen" component={BundleDetailScreen} />
+      <Stack.Screen name="WalletScreen" component={WalletScreen} />
     </Stack.Navigator>
   );
 }

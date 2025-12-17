@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { setId } from '../../store/auth/globalStateSlice';
+import { setId, setType } from '../../store/auth/globalStateSlice';
 import StarRating from '../StarRating';
 
-const CourseInfoCard = ({ course }) => {
+const CourseInfoCard = ({ course, fullWidth = false }) => {
   const [rating, setRating] = useState(course?.rating || 4);
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -24,12 +24,13 @@ const CourseInfoCard = ({ course }) => {
 
   const handlePress = () => {
     dispatch(setId(course._id));
+    dispatch(setType('course'));
      navigation.navigate('CourseDetailsScreen');
   };
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, fullWidth && styles.cardFullWidth]}
       onPress={handlePress}
       activeOpacity={0.8}
     >
@@ -74,6 +75,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 5,
     elevation: 3,
+  },
+  cardFullWidth: {
+    width: '100%',
+    marginHorizontal: 0,
   },
   image: {
     width: '100%',

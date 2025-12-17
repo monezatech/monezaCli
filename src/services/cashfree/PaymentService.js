@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getCurrentConfig } from '../../Cashfree/config/cashfree.config.js'; // Use dynamic config
+import { getSimpleProdConfig } from '../../Cashfree/config/simpleProdConfig.js'; // Import simple prod config
 import EnvironmentSwitcher from '../../Cashfree/utils/environmentSwitcher.js';
 // import debugEnvironment from '../../Cashfree/utils/debugEnvironment.js';
 // import testEnvironment from '../utils/testEnvironment.js';
@@ -39,6 +40,89 @@ class PaymentService {
     };
   }
 
+  // Create order for hosted checkout (Cashfree's own UI)
+  async createHostedOrder(orderDetails) {
+    try {
+      console.log('🔄 Creating Cashfree hosted checkout order...');
+
+      // Production safety check
+      if (EnvironmentSwitcher.isProductionEnvironment()) {
+        console.log('⚠️ PRODUCTION MODE: Creating real payment order');
+
+        // Additional validation for production
+        if (!orderDetails.amount || orderDetails.amount < 1) {
+          throw new Error('Invalid amount for production payment');
+        }
+
+        if (!orderDetails.customerEmail || !orderDetails.customerPhone) {
+          throw new Error('Customer email and phone are required for production payments');
+        }
+      } else {
+        console.log('🧪 TEST MODE: Creating test payment order');
+      }
+
+      const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Order creation for hosted checkout
+      const orderData = {
+        order_id: orderId,
+        order_amount: orderDetails.amount,
+        order_currency: 'INR',
+        customer_details: {
+          customer_id: orderDetails.customerId,
+          customer_name: orderDetails.customerName,
+          customer_email: orderDetails.customerEmail,
+          customer_phone: orderDetails.customerPhone,
+        },
+        order_meta: {
+          return_url: this.config.returnUrls?.SUCCESS || 'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
+          notify_url: this.config.notifyUrl || 'https://test.cashfree.com/pgappsdemos/notify.php',
+          payment_methods: "cc,dc,nb,upi,wallet,app",  // Enable all payment methods for hosted checkout
+        },
+        order_note: 'React Native Android Demo - Hosted Payment',
+        order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+      };
+
+      console.log('🔄 Order payload:', orderData);
+      console.log('🔄 Creating order at:', `${this.baseUrl}/orders`);
+
+      const response = await axios.post(`${this.baseUrl}/orders`, orderData, {
+        headers: this.getAuthHeaders(),
+        timeout: 30000,
+      });
+
+      console.log('✅ Hosted order created successfully:', response.data);
+
+      // Return the hosted checkout URL
+      const orderResponse = {
+        order_id: orderId,
+        payment_url: response.data.payment_link,
+        checkout_type: 'hosted',
+        environment: this.config.environment
+      };
+
+      console.log('🔍 Hosted Order Response:');
+      console.log('  - order_id:', orderResponse.order_id);
+      console.log('  - payment_url:', orderResponse.payment_url);
+      console.log('  - checkout_type:', orderResponse.checkout_type);
+      console.log('  - environment:', orderResponse.environment);
+
+      return orderResponse;
+
+    } catch (error) {
+      console.error('❌ Hosted order creation failed:', error);
+
+      if (error.response) {
+        console.error('API Error:', error.response.status, error.response.data);
+        throw new Error(`Order creation failed: ${error.response.data.message || 'Unknown API error'}`);
+      } else if (error.request) {
+        throw new Error('Network error: Please check your connection');
+      } else {
+        throw new Error(`Request setup error: ${error.message}`);
+      }
+    }
+  }
+
   // SIMPLE APPROACH: Create order and return it directly for SDK
   async createOrder(orderDetails) {
     try {
@@ -62,7 +146,7 @@ class PaymentService {
       
       const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      // Simple order creation - no complex session logic
+      // Simple order creation for hosted checkout
       const orderData = {
         order_id: orderId,
         order_amount: orderDetails.amount,
@@ -76,12 +160,9 @@ class PaymentService {
         order_meta: {
           return_url: this.config.returnUrls?.SUCCESS || 'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
           notify_url: this.config.notifyUrl || 'https://test.cashfree.com/pgappsdemos/notify.php',
-          payment_methods: "cc,dc,nb",  // Test with cards and net banking first
-          // Enable UPI Collect Flow for production testing (bypasses source validation)
-          upi_intent: false,  // Disable UPI Intent (which requires Play Store)
-          upi_collect: true   // Enable UPI Collect (works with sideloaded apps)
+          payment_methods: "cc,dc,nb,upi,wallet",  // Enable all payment methods for hosted checkout
         },
-        order_note: 'React Native Android Demo - UPI Payment',
+        order_note: 'React Native Android Demo - Hosted Payment',
         order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
       };
 

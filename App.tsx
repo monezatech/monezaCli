@@ -42,7 +42,7 @@ function AppContent() {
 
     checkAuth();
 
-    // Axios Interceptor for 401 Unauthorized
+    // Axios Interceptor for 401 Unauthorized (currently commented out)
     // const interceptor = axios.interceptors.response.use(
     //   (response) => response,
     //   async (error) => {
@@ -62,7 +62,10 @@ function AppContent() {
     // );
 
     return () => {
-      axios.interceptors.response.eject(interceptor);
+      // Only eject if interceptor was created
+      // if (interceptor) {
+      //   axios.interceptors.response.eject(interceptor);
+      // }
     };
   }, [dispatch]);
 

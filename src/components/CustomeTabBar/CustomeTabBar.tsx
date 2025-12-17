@@ -56,18 +56,22 @@ const CustomTabBar: React.FC<Props> = ({ state, descriptors, navigation }) => {
             switch (route.name) {
               case 'Home':
                 return <MaterialIcons name="home" size={22} color={color} />;
-              case 'Challenges':
-                return <MaterialIcons name="trophy" size={22} color={color} />;
               case 'Analytics':
                 return (
                   <MaterialIcons name="chart-bar" size={22} color={color} />
                 );
-              case 'Feed':
+              case 'Notification':
                 return (
-                  <MaterialIcons name="file-document" size={22} color={color} />
+                  <MaterialIcons name="bell" size={22} color={color} />
                 );
               case 'Profile':
-                return <MaterialIcons name="person" size={22} color={color} />;
+                return (
+                  <MaterialIcons
+                    name="account-outline"
+                    size={22}
+                    color={color}
+                  />
+                );
               default:
                 return null;
             }

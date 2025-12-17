@@ -72,9 +72,12 @@ const CourseDetailsScreen = () => {
 
       if (lessons.length > 0) {
         const first = lessons[0];
-        setVideo(first.videoUrl ?? null);
-        setThumb(first.thumbUrl ?? null);
+        console.log('First lesson:', first);
+        setVideo(first.videoUrl ?? first.video ?? null);
+        setThumb(first.thumbUrl ?? first.thumbnail ?? null);
         setCurrentLessonId(first._id ?? null);
+        console.log('Video URL:', first.videoUrl ?? first.video);
+        console.log('Thumb URL:', first.thumbUrl ?? first.thumbnail);
       } else {
         // reset if no lessons
         setVideo(null);
@@ -111,8 +114,8 @@ const CourseDetailsScreen = () => {
       // console.log('LayoutAnimation error', e);
     }
 
-    setVideo(item.videoUrl ?? null);
-    setThumb(item.thumbUrl ?? null);
+    setVideo(item.videoUrl ?? item.video ?? null);
+    setThumb(item.thumbUrl ?? item.thumbnail ?? null);
     setCurrentLessonId(item._id ?? null);
   };
 
@@ -152,12 +155,14 @@ const CourseDetailsScreen = () => {
       </TouchableOpacity>
 
       {/* Video Player */}
-      <VideoStreamingScreen
-        source={video}
-        thumbnail={thumb}
-        endThumbnail={thumb}
-        fullViewd={() => {}}
-      />
+      <View style={{ height: 250 }}>
+        <VideoStreamingScreen
+          source={video}
+          thumbnail={thumb}
+          endThumbnail={thumb}
+          fullViewd={() => {}}
+        />
+      </View>
 
       {/* Progress */}
       {(hasPurchased || completedLectures > 0) && (

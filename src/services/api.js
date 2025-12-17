@@ -1,5 +1,9 @@
+// Production backend URL
 // const BASE_URL = "https://moneza-backend.onrender.com";
-const BASE_URL = 'http://192.168.1.3:8000';
+// For development/testing:
+// For Android emulator, use 10.0.2.2 to reach host machine
+// For physical device, use your computer's local IP address
+const BASE_URL = 'http://192.168.1.23:8000';
 import axios from "axios"; // Keep axios import here for direct usage
 
 const apiCall = async (endpoint, options = {}) => {
