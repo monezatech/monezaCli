@@ -5,15 +5,18 @@
 import { PRODUCTION_CONFIG } from './production.config.js';
 
 // Current environment - Change this to switch between TEST and PROD
-const CURRENT_ENVIRONMENT = 'TEST'; // Changed to TEST for payout testing
+const CURRENT_ENVIRONMENT = 'PROD'; // PRODUCTION READY
 
 export const ENV_CONFIG = {
   // Cashfree App Credentials - TEST SETUP
   // IMPORTANT: Replace these with your actual Cashfree TEST credentials from Cashfree Dashboard
   // Go to: https://merchant.cashfree.com/merchant/pg/app/apps → Create Test App
   // For now, using placeholder - you need to replace these with real credentials
-  CASHFREE_APP_ID: 'CF986624D491J1D4362S73FH22LG', // ⚠️ REPLACE WITH YOUR TEST APP ID
-  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_15419a8f21de58224d4f71b0411f31e9_925dba9e', // ⚠️ REPLACE WITH YOUR TEST SECRET KEY
+  CASHFREE_APP_ID: '9866241965681a9ce16b5db597426689', // ⚠️ REPLACE WITH YOUR TEST APP ID
+  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_2b81c42f9cde5ca307f09a1caf784540_b8b5a50e', // ⚠️ REPLACE WITH YOUR TEST SECRET KEY
+
+  // CASHFREE_APP_ID: 'TEST1065018594deb01d9b8a8bbd82fe58105601', // ⚠️ REPLACE WITH YOUR TEST APP ID
+  // CASHFREE_SECRET_KEY: 'cfsk_ma_test_67cb3c92687b06797940b0a162545fc8_1032d4d0', // ⚠️ REPLAC
 
   // Environment (TEST for sandbox, PROD for production)
   ENVIRONMENT: CURRENT_ENVIRONMENT,
@@ -25,7 +28,7 @@ export const ENV_CONFIG = {
   },
 
   // Your backend URLs - TEST SETUP for Cashfree sandbox
-  BACKEND_BASE_URL: 'http://192.168.1.23:8000', // Assuming local backend for test
+  BACKEND_BASE_URL: 'https://moneza-backend.onrender.com', // Assuming local backend for test
   PAYMENT_SUCCESS_URL:
     'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
   PAYMENT_FAILURE_URL:

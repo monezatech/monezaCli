@@ -304,9 +304,10 @@ const EditUserScreen = () => {
               touched,
             }) => (
               <View style={styles.form}>
+                <Text style={styles.label}>Name</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Name"
+                  placeholder="Enter your name"
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                   value={values.name}
@@ -315,47 +316,53 @@ const EditUserScreen = () => {
                   <Text style={styles.errorText}>{errors.name}</Text>
                 )}
 
+                <Text style={styles.label}>Phone</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Phone"
+                  placeholder="Enter your phone number"
                   keyboardType="phone-pad"
                   onChangeText={handleChange('phone')}
                   onBlur={handleBlur('phone')}
                   value={values.phone}
                 />
 
+                <Text style={styles.label}>Street</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Street"
+                  placeholder="Enter your street address"
                   onChangeText={handleChange('street')}
                   onBlur={handleBlur('street')}
                   value={values.street}
                 />
+                <Text style={styles.label}>City</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="City"
+                  placeholder="Enter your city"
                   onChangeText={handleChange('city')}
                   onBlur={handleBlur('city')}
                   value={values.city}
                 />
+                <Text style={styles.label}>State</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="State"
+                  placeholder="Enter your state"
                   onChangeText={handleChange('state')}
                   onBlur={handleBlur('state')}
                   value={values.state}
                 />
+                <Text style={styles.label}>Zip</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Zip"
+                  placeholder="Enter your zip code"
                   keyboardType="number-pad"
                   onChangeText={handleChange('zip')}
                   onBlur={handleBlur('zip')}
                   value={values.zip}
                 />
+                <Text style={styles.label}>Date of Birth</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Date of Birth (YYYY-MM-DD)"
+                  placeholder="Enter your date of birth (YYYY-MM-DD)"
                   onChangeText={handleChange('dob')}
                   onBlur={handleBlur('dob')}
                   value={formatDateInput(values.dob)}
@@ -448,9 +455,10 @@ const EditUserScreen = () => {
                 <View style={styles.form}>
                   <Text style={styles.sectionTitle}>Add Bank Account</Text>
 
+                  <Text style={styles.label}>Account Holder Name</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Account Holder Name"
+                    placeholder="Enter account holder name"
                     onChangeText={handleChange('accountHolderName')}
                     onBlur={handleBlur('accountHolderName')}
                     value={values.accountHolderName}
@@ -461,9 +469,10 @@ const EditUserScreen = () => {
                     </Text>
                   )}
 
+                  <Text style={styles.label}>Account Number</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Account Number"
+                    placeholder="Enter account number"
                     keyboardType="number-pad"
                     onChangeText={handleChange('accountNumber')}
                     onBlur={handleBlur('accountNumber')}
@@ -473,9 +482,10 @@ const EditUserScreen = () => {
                     <Text style={styles.errorText}>{errors.accountNumber}</Text>
                   )}
 
+                  <Text style={styles.label}>IFSC Code</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="IFSC Code"
+                    placeholder="Enter IFSC code"
                     onChangeText={handleChange('ifscCode')}
                     onBlur={handleBlur('ifscCode')}
                     value={values.ifscCode}
@@ -484,9 +494,10 @@ const EditUserScreen = () => {
                     <Text style={styles.errorText}>{errors.ifscCode}</Text>
                   )}
 
+                  <Text style={styles.label}>Bank Name</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Bank Name"
+                    placeholder="Enter bank name"
                     onChangeText={handleChange('bankName')}
                     onBlur={handleBlur('bankName')}
                     value={values.bankName}
@@ -495,9 +506,10 @@ const EditUserScreen = () => {
                     <Text style={styles.errorText}>{errors.bankName}</Text>
                   )}
 
+                  <Text style={styles.label}>Branch</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Branch (optional)"
+                    placeholder="Enter branch name (optional)"
                     onChangeText={handleChange('branch')}
                     onBlur={handleBlur('branch')}
                     value={values.branch}
@@ -552,6 +564,12 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     backgroundColor: '#fff',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
   },
   button: {
     backgroundColor: '#4960F9',

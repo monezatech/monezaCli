@@ -77,7 +77,7 @@ class PaymentService {
         order_meta: {
           return_url: this.config.returnUrls?.SUCCESS || 'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
           notify_url: this.config.notifyUrl || 'https://test.cashfree.com/pgappsdemos/notify.php',
-          payment_methods: "cc,dc,nb,upi,wallet,app",  // Enable all payment methods for hosted checkout
+          payment_methods: "upi,cc,dc,nb",  // Enable UPI, Cards, and Net Banking only
         },
         order_note: 'React Native Android Demo - Hosted Payment',
         order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
@@ -94,11 +94,26 @@ class PaymentService {
       console.log('✅ Hosted order created successfully:', response.data);
 
       // Return the hosted checkout URL
+      // For hosted checkout, use the payment_link if available, otherwise construct URL
+      let paymentUrl = response.data.payment_link || response.data.payment_url;
+
+      // For production, always use the payment_link or construct the proper production URL
+      if (!paymentUrl) {
+        if (this.config.environment === 'PROD') {
+          // For production, use the official Cashfree payments URL
+          paymentUrl = `https://payments.cashfree.com/order/${orderId}`;
+        } else {
+          // For sandbox, use sandbox URL
+          paymentUrl = `https://sandbox.cashfree.com/order/${orderId}`;
+        }
+      }
+
       const orderResponse = {
         order_id: orderId,
-        payment_url: response.data.payment_link,
+        payment_url: paymentUrl,
         checkout_type: 'hosted',
-        environment: this.config.environment
+        environment: this.config.environment,
+        cf_order_id: response.data.cf_order_id
       };
 
       console.log('🔍 Hosted Order Response:');
@@ -160,7 +175,7 @@ class PaymentService {
         order_meta: {
           return_url: this.config.returnUrls?.SUCCESS || 'https://test.cashfree.com/pgappsdemos/return.php?order_id={order_id}',
           notify_url: this.config.notifyUrl || 'https://test.cashfree.com/pgappsdemos/notify.php',
-          payment_methods: "cc,dc,nb,upi,wallet",  // Enable all payment methods for hosted checkout
+          payment_methods: "upi,cc,dc,nb",  // Enable UPI, Cards, and Net Banking only
         },
         order_note: 'React Native Android Demo - Hosted Payment',
         order_expiry_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),

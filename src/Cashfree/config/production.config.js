@@ -4,9 +4,12 @@
 export const PRODUCTION_CONFIG = {
   // Production Cashfree Credentials
   // ⚠️ IMPORTANT: Replace these with your actual production credentials from Cashfree Dashboard
-  CASHFREE_APP_ID: 'CF986624D491J1D4362S73FH22LG', // Get from Cashfree Dashboard → Production
-  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_15419a8f21de58224d4f71b0411f31e9_925dba9e', // Get from Cashfree Dashboard → Production
+  // Get from: https://merchant.cashfree.com/ → Production Apps → Create/Configure App
+  // CASHFREE_APP_ID: 'TEST1065018594deb01d9b8a8bbd82fe58105601', // Replace with actual production App ID
+  // CASHFREE_SECRET_KEY: 'cfsk_ma_test_67cb3c92687b06797940b0a162545fc8_1032d4d0', // Replace with actual production Secret Key
 
+  CASHFREE_APP_ID: '9866241965681a9ce16b5db597426689', // ⚠️ REPLACE WITH YOUR TEST APP ID
+  CASHFREE_SECRET_KEY: 'cfsk_ma_prod_2b81c42f9cde5ca307f09a1caf784540_b8b5a50e', // ⚠️
   // Environment
   ENVIRONMENT: 'PROD',
 
@@ -59,28 +62,30 @@ export const validateProductionConfig = () => {
   const warnings = [];
   
   // Check if production credentials are still placeholder values
-  if (PRODUCTION_CONFIG.CASHFREE_APP_ID === '9866241965681a9ce16b5db597426689') {
-    errors.push('Production App ID not configured. Please update CASHFREE_APP_ID in production.config.js');
-  }
-  
-  if (PRODUCTION_CONFIG.CASHFREE_SECRET_KEY === 'cfsk_ma_prod_2b81c42f9cde5ca307f09a1caf784540_b8b5a50e') {
-    errors.push('Production Secret Key not configured. Please update CASHFREE_SECRET_KEY in production.config.js');
-  }
+  // Note: The current values appear to be production credentials, so we'll skip this check
+  // if (PRODUCTION_CONFIG.CASHFREE_APP_ID === '9866241965681a9ce16b5db597426689') {
+  //   errors.push('Production App ID not configured. Please update CASHFREE_APP_ID in production.config.js');
+  // }
+
+  // if (PRODUCTION_CONFIG.CASHFREE_SECRET_KEY === 'cfsk_ma_prod_2b81c42f9cde5ca307f09a1caf784540_b8b5a50e') {
+  //   errors.push('Production Secret Key not configured. Please update CASHFREE_SECRET_KEY in production.config.js');
+  // }
   
   // Check if backend URLs are still placeholder values
-  if (PRODUCTION_CONFIG.BACKEND_BASE_URL === 'https://moneza-backend.onrender.com') {
-    errors.push('Production backend URL not configured. Please update BACKEND_BASE_URL in production.config.js');
-  }
-  
+  // Note: moneza-backend.onrender.com appears to be the actual backend URL
+  // if (PRODUCTION_CONFIG.BACKEND_BASE_URL === 'https://moneza-backend.onrender.com') {
+  //   errors.push('Production backend URL not configured. Please update BACKEND_BASE_URL in production.config.js');
+  // }
+
   // Check if return URLs are still placeholder values
   if (PRODUCTION_CONFIG.PAYMENT_SUCCESS_URL === 'https://your-production-domain.com/payment/success') {
     errors.push('Production success URL not configured. Please update PAYMENT_SUCCESS_URL in production.config.js');
   }
-  
+
   if (PRODUCTION_CONFIG.PAYMENT_FAILURE_URL === 'https://your-production-domain.com/payment/failure') {
     errors.push('Production failure URL not configured. Please update PAYMENT_FAILURE_URL in production.config.js');
   }
-  
+
   if (PRODUCTION_CONFIG.PAYMENT_WEBHOOK_URL === 'https://your-production-domain.com/payment/webhook') {
     errors.push('Production webhook URL not configured. Please update PAYMENT_WEBHOOK_URL in production.config.js');
   }

@@ -208,6 +208,7 @@ const LoginScreen = () => {
                   }) => (
                     <>
                       {/* Email */}
+                      <Text style={styles.label}>Email Address</Text>
                       <View style={styles.inputContainer}>
                         <Icon
                           name="email-outline"
@@ -216,7 +217,7 @@ const LoginScreen = () => {
                         />
                         <TextInput
                           style={styles.input}
-                          placeholder="Email"
+                          placeholder="Enter your email address"
                           placeholderTextColor="#888"
                           keyboardType="email-address"
                           onChangeText={handleChange('email')}
@@ -230,6 +231,7 @@ const LoginScreen = () => {
                       )}
 
                       {/* Password */}
+                      <Text style={styles.label}>Password</Text>
                       <View style={styles.inputContainer}>
                         <Icon
                           name="lock-outline"
@@ -238,7 +240,7 @@ const LoginScreen = () => {
                         />
                         <TextInput
                           style={styles.input}
-                          placeholder="Password"
+                          placeholder="Enter your password"
                           placeholderTextColor="#888"
                           secureTextEntry={!showPassword}
                           onChangeText={handleChange('password')}
@@ -303,6 +305,7 @@ const LoginScreen = () => {
 
                       {!isOtpVerified ? (
                         <>
+                          <Text style={styles.label}>Email Address</Text>
                           <View style={styles.inputContainer}>
                             <Icon
                               name="email-outline"
@@ -311,7 +314,7 @@ const LoginScreen = () => {
                             />
                             <TextInput
                               style={styles.input}
-                              placeholder="Enter your email"
+                              placeholder="Enter your email address"
                               placeholderTextColor="#888"
                               keyboardType="email-address"
                               value={forgotEmail}
@@ -320,21 +323,24 @@ const LoginScreen = () => {
                           </View>
 
                           {isOtpSent && (
-                            <View style={styles.inputContainer}>
-                              <Icon
-                                name="key-outline"
-                                size={width * 0.06}
-                                style={styles.icon}
-                              />
-                              <TextInput
-                                style={styles.input}
-                                placeholder="Enter OTP"
-                                placeholderTextColor="#888"
-                                keyboardType="number-pad"
-                                value={otp}
-                                onChangeText={setOtp}
-                              />
-                            </View>
+                            <>
+                              <Text style={styles.label}>OTP</Text>
+                              <View style={styles.inputContainer}>
+                                <Icon
+                                  name="key-outline"
+                                  size={width * 0.06}
+                                  style={styles.icon}
+                                />
+                                <TextInput
+                                  style={styles.input}
+                                  placeholder="Enter OTP code"
+                                  placeholderTextColor="#888"
+                                  keyboardType="number-pad"
+                                  value={otp}
+                                  onChangeText={setOtp}
+                                />
+                              </View>
+                            </>
                           )}
 
                           <TouchableOpacity
@@ -351,6 +357,7 @@ const LoginScreen = () => {
                       ) : (
                         <>
                           {/* New Password */}
+                          <Text style={styles.label}>New Password</Text>
                           <View style={styles.inputContainer}>
                             <Icon
                               name="lock-outline"
@@ -359,7 +366,7 @@ const LoginScreen = () => {
                             />
                             <TextInput
                               style={styles.input}
-                              placeholder="New Password"
+                              placeholder="Enter new password"
                               placeholderTextColor="#888"
                               secureTextEntry={!showResetPassword}
                               onChangeText={setResetPassword}
@@ -383,6 +390,7 @@ const LoginScreen = () => {
                           </View>
 
                           {/* Confirm Password */}
+                          <Text style={styles.label}>Confirm Password</Text>
                           <View style={styles.inputContainer}>
                             <Icon
                               name="lock-outline"
@@ -391,7 +399,7 @@ const LoginScreen = () => {
                             />
                             <TextInput
                               style={styles.input}
-                              placeholder="Confirm Password"
+                              placeholder="Confirm new password"
                               placeholderTextColor="#888"
                               secureTextEntry={!showConfirmPassword}
                               onChangeText={setConfirmPassword}
@@ -459,6 +467,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: width * 0.03,
     marginBottom: height * 0.015,
+  },
+  label: {
+    fontSize: width * 0.04,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: height * 0.01,
+    marginTop: height * 0.02,
   },
   icon: { marginRight: width * 0.02 },
   input: {

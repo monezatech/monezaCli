@@ -11,7 +11,6 @@ import {
   Image,
   ActivityIndicator,
   SafeAreaView,
-  Modal,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -20,8 +19,7 @@ import { apiService } from '../../services/service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
-import PaymentService from '../../services/cashfree/PaymentService';
-import PaymentWebView from '../../Cashfree/components/PaymentWebView';
+import PaymentSDK from '../../Cashfree/components/PaymentSDK';
 
 const BuyNowScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -35,8 +33,8 @@ const BuyNowScreen: React.FC = () => {
   const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [payLoading, setPayLoading] = useState(false);
-  const [showPaymentWebView, setShowPaymentWebView] = useState(false);
-  const [paymentSessionData, setPaymentSessionData] = useState<any>(null);
+  const [showPaymentSDK, setShowPaymentSDK] = useState(false);
+  const [paymentOrderDetails, setPaymentOrderDetails] = useState<any>(null);
 
   // -----------------------
   // Fetch item (course or bundle)
@@ -67,7 +65,7 @@ const BuyNowScreen: React.FC = () => {
   };
 
   // -----------------------
-  // Cashfree hosted checkout payment handler
+  // Cashfree SDK payment handler
   // -----------------------
   const handlePurchase = async () => {
     if (!item || !user) {
@@ -78,7 +76,7 @@ const BuyNowScreen: React.FC = () => {
     try {
       setPayLoading(true);
 
-      // Create order details for Cashfree hosted checkout
+      // Create order details for Cashfree SDK
       const orderDetails = {
         customerId: user._id || 'CUSTOMER_001',
         customerName: user.name || 'User',
@@ -87,28 +85,13 @@ const BuyNowScreen: React.FC = () => {
         amount: item.price || 1,
       };
 
-      console.log('🔄 Creating Cashfree hosted checkout order...', orderDetails);
+      console.log('🔄 Preparing Cashfree SDK payment...', orderDetails);
 
-      // Create hosted checkout order using PaymentService
-      const order = await PaymentService.createHostedOrder(orderDetails);
+      // Set order details for PaymentSDK component
+      setPaymentOrderDetails(orderDetails);
 
-      if (order && order.payment_url) {
-        console.log('✅ Hosted order created successfully:', order);
-
-        // Set up session data for PaymentWebView
-        setPaymentSessionData({
-          payment_url: order.payment_url,
-          order_id: order.order_id,
-          checkout_type: order.checkout_type,
-        });
-
-        // Show the payment WebView
-        setShowPaymentWebView(true);
-
-      } else {
-        console.error('❌ Failed to create hosted order:', order);
-        Alert.alert('Error', 'Could not create payment order. Please try again.');
-      }
+      // Show the payment SDK modal
+      setShowPaymentSDK(true);
 
     } catch (error: any) {
       console.error('Payment initiation error:', error);
@@ -126,19 +109,60 @@ const BuyNowScreen: React.FC = () => {
   // -----------------------
   const handlePaymentSuccess = async (data: any) => {
     console.log('✅ Payment Success:', data);
+    console.log('🔍 Item Type:', itemType);
+    console.log('🔍 Item ID:', itemId);
+    console.log('🔍 Full data structure:', JSON.stringify(data, null, 2));
 
     try {
       // After successful payment, call the appropriate purchase API
       if (itemType === 'bundle') {
+        console.log('📦 Processing bundle purchase...');
         const tokenLocal = await AsyncStorage.getItem('token');
+        console.log('🔄 Calling purchaseBundle with:', {
+          token: tokenLocal ? 'present' : 'missing',
+          bundleId: itemId,
+          amount: item.price,
+          referralCode: referralCode || '',
+          itemType,
+        });
+
+        // Validate bundleId
+        if (!itemId || typeof itemId !== 'string' || itemId.length !== 24) {
+          throw new Error(`Invalid bundleId: ${itemId}`);
+        }
+
         await apiService.purchaseBundle({
           token: tokenLocal,
           bundleId: itemId,
           amount: item.price,
           referralCode: referralCode || '',
         });
+
+        console.log('✅ Bundle purchase API call completed');
+      } else if (itemType === 'course') {
+        console.log('📚 Processing course purchase...');
+        const tokenLocal = await AsyncStorage.getItem('token');
+        console.log('🔄 Calling purchaseCourse with:', {
+          token: tokenLocal ? 'present' : 'missing',
+          courseId: itemId,
+          amount: item.price,
+          itemType,
+        });
+
+        // Validate courseId
+        if (!itemId || typeof itemId !== 'string' || itemId.length !== 24) {
+          throw new Error(`Invalid courseId: ${itemId}`);
+        }
+
+        await apiService.purchaseCourse({
+          token: tokenLocal,
+          courseId: itemId,
+          amount: item.price,
+          referralCode: referralCode || '',
+        });
+
+        console.log('✅ Course purchase API call completed');
       }
-      // For courses, purchase might be handled via webhook, so no additional API call needed
 
       Alert.alert(
         'Payment Successful!',
@@ -218,6 +242,7 @@ const BuyNowScreen: React.FC = () => {
         {/* Referral */}
         <View style={styles.card}>
           <Text style={styles.heading}>Referral Code</Text>
+          <Text style={styles.label}>Referral Code</Text>
           <TextInput
             placeholder="Enter referral code (optional)"
             value={referralCode}
@@ -247,10 +272,6 @@ const BuyNowScreen: React.FC = () => {
               <Ionicons name="business-outline" size={20} color="#4F46E5" />
               <Text style={styles.paymentMethodText}>Net Banking</Text>
             </View>
-            <View style={styles.paymentMethod}>
-              <Ionicons name="wallet-outline" size={20} color="#4F46E5" />
-              <Text style={styles.paymentMethodText}>Wallets</Text>
-            </View>
           </View>
 
           <Text style={styles.securityNote}>
@@ -278,34 +299,28 @@ const BuyNowScreen: React.FC = () => {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Payment WebView Modal */}
-      <Modal
-        visible={showPaymentWebView}
-        animationType="slide"
-        presentationStyle="formSheet"
-        onRequestClose={() => setShowPaymentWebView(false)}
-      >
-        {paymentSessionData && (
-          <PaymentWebView
-            sessionData={paymentSessionData}
-            onPaymentSuccess={(data) => {
-              setShowPaymentWebView(false);
-              setPaymentSessionData(null);
-              handlePaymentSuccess(data);
-            }}
-            onPaymentError={(error) => {
-              setShowPaymentWebView(false);
-              setPaymentSessionData(null);
-              handlePaymentError(error);
-            }}
-            onClose={() => {
-              setShowPaymentWebView(false);
-              setPaymentSessionData(null);
-              handlePaymentClose();
-            }}
-          />
-        )}
-      </Modal>
+      {/* Payment SDK Modal */}
+      {paymentOrderDetails && (
+        <PaymentSDK
+          orderDetails={paymentOrderDetails}
+          visible={showPaymentSDK}
+          onPaymentSuccess={(data: any) => {
+            setShowPaymentSDK(false);
+            setPaymentOrderDetails(null);
+            handlePaymentSuccess(data);
+          }}
+          onPaymentError={(error: any) => {
+            setShowPaymentSDK(false);
+            setPaymentOrderDetails(null);
+            handlePaymentError(error);
+          }}
+          onClose={() => {
+            setShowPaymentSDK(false);
+            setPaymentOrderDetails(null);
+            handlePaymentClose();
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -393,6 +408,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#FAFBFF',
     fontSize: 14,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
   },
   buyButton: {
     marginTop: 8,

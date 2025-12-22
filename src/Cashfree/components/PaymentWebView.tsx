@@ -52,23 +52,56 @@ const PaymentWebView: React.FC<PaymentWebViewProps> = ({
   // Handle navigation state changes
   const handleNavigationStateChange = (navState: any) => {
     console.log('🌐 WebView navigation state:', navState);
-    
+
     // Check if we're on a success or failure URL
     if (navState.url) {
-      if (navState.url.includes('success') || navState.url.includes('return.php')) {
+      // Check for success URLs
+      if (navState.url.includes('success') ||
+          navState.url.includes('return.php') ||
+          navState.url.includes('thankyou') ||
+          navState.url.includes('complete')) {
         console.log('✅ Payment success detected from URL');
         onPaymentSuccess({
           orderId: sessionData.order_id,
           status: 'success',
           message: 'Payment completed successfully'
         });
-      } else if (navState.url.includes('failure') || navState.url.includes('error')) {
+        return;
+      }
+
+      // Check for failure URLs
+      if (navState.url.includes('failure') ||
+          navState.url.includes('error') ||
+          navState.url.includes('cancelled') ||
+          navState.url.includes('failed')) {
         console.log('❌ Payment failure detected from URL');
+        onPaymentError({
+          orderId: sessionData.order_id,
+          status: 'error',
+          message: 'Payment failed or was cancelled'
+        });
+        return;
+      }
+
+      // Check for specific Cashfree status indicators
+      if (navState.url.includes('order_id=') && navState.url.includes('status=PAID')) {
+        console.log('✅ Payment success detected from status parameter');
+        onPaymentSuccess({
+          orderId: sessionData.order_id,
+          status: 'success',
+          message: 'Payment completed successfully'
+        });
+        return;
+      }
+
+      if (navState.url.includes('order_id=') && navState.url.includes('status=FAILED')) {
+        console.log('❌ Payment failure detected from status parameter');
         onPaymentError({
           orderId: sessionData.order_id,
           status: 'error',
           message: 'Payment failed'
         });
+        return;
       }
     }
   };
@@ -306,4 +339,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PaymentWebView; 
+export default PaymentWebView;

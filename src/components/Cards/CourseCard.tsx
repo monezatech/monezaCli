@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setId, setType } from '../../store/auth/globalStateSlice';
 import StarRating from '../StarRating';
 
-const CourseInfoCard = ({ course, fullWidth = false }) => {
+const CourseInfoCard = ({ course, fullWidth = false, isPurchased = false }) => {
   const [rating, setRating] = useState(course?.rating || 4);
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -44,9 +44,16 @@ const CourseInfoCard = ({ course, fullWidth = false }) => {
       />
 
       <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={1}>
-          {truncateHeadingText(course.title, 40)}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title} numberOfLines={1}>
+            {truncateHeadingText(course.title, 40)}
+          </Text>
+          {isPurchased && (
+            <View style={styles.purchasedBadge}>
+              <Text style={styles.purchasedText}>Purchased</Text>
+            </View>
+          )}
+        </View>
         <Text style={styles.description} numberOfLines={2}>
           {truncateText(course?.description, 12)}
         </Text>
@@ -90,10 +97,29 @@ const styles = StyleSheet.create({
   content: {
     padding: 10,
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
   title: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1f2937',
+    flex: 1,
+  },
+  purchasedBadge: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginLeft: 8,
+  },
+  purchasedText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#fff',
   },
   description: {
     fontSize: 12,
