@@ -1,20 +1,25 @@
 // Production backend URL
-// const BASE_URL = "https://moneza-backend.onrender.com";
+const BASE_URL = "https://moneza-backend.onrender.com";
 // For development/testing:
 // For Android emulator, use 10.0.2.2 to reach host machine
 // For physical device, use your computer's local IP address
-const BASE_URL = 'http://192.168.1.23:8000';
+// Updated BASE_URL - make sure this matches your backend server IP
+// const BASE_URL = 'http://192.168.1.23:8000';
 import axios from "axios"; // Keep axios import here for direct usage
 
 const apiCall = async (endpoint, options = {}) => {
   const {
     method = "GET",
     data = null,
+    body = null, // Support both data and body for backward compatibility
     params = {},
     headers = {},
     token = null,
     ignoreAuthError = false, // New option to ignore 401 for specific calls
   } = options;
+
+  // Use data if provided, otherwise use body
+  const requestData = data !== null ? data : body;
 
   const apiHeaders = {
     "Content-Type": "application/json",
@@ -30,7 +35,7 @@ const apiCall = async (endpoint, options = {}) => {
       params,
       timeout: 10000,
       headers: apiHeaders,
-      ...(data !== null ? { data } : {}),
+      ...(requestData !== null ? { data: requestData } : {}),
     };
 
     const response = await axios(axiosConfig);

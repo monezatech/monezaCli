@@ -66,6 +66,28 @@ export const apiService = {
     }
   },
 
+  purchaseCourse: async ({ token, courseId, amount, referralCode }) => {
+    try {
+      const response = await apiCall('/api/course/purchase', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          courseId,
+          amount,
+          referralCode: referralCode || '',
+        },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error purchasing course:', error);
+      throw error;
+    }
+  },
+
   purchaseBundle: async ({ token, bundleId, amount, referralCode }) => {
     try {
       const response = await apiCall('/api/bundle/purchase', {
@@ -74,11 +96,11 @@ export const apiService = {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+        data: {
           bundleId,
           amount,
           referralCode: referralCode || '',
-        }),
+        },
         ignoreAuthError: true,
       });
 
@@ -125,9 +147,9 @@ export const apiService = {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json', // ✅ Add this line
         },
-        body: JSON.stringify({
+        data: {
           courseId,
-        }),
+        },
         ignoreAuthError: true, // Ignore 401 errors for this specific call
       });
 
@@ -193,7 +215,7 @@ export const apiService = {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ courseId, lessonId }),
+      data: { courseId, lessonId },
     });
   },
 
@@ -260,6 +282,47 @@ export const apiService = {
       return response;
     } catch (error) {
       console.error('Error fetching wallet summary:', error);
+      throw error;
+    }
+  },
+
+  // Image upload functions
+  uploadProfilePhoto: async ({ token, imageUri, imageType }) => {
+    try {
+      // Create form data for multipart upload
+      const formData = new FormData();
+      formData.append('profilePhoto', {
+        uri: imageUri,
+        type: imageType || 'image/jpeg',
+        name: 'profile-photo.jpg',
+      });
+
+      const response = await apiCall('/api/image/upload-profile-photo', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error uploading profile photo:', error);
+      throw error;
+    }
+  },
+
+  deleteProfilePhoto: async ({ token }) => {
+    try {
+      const response = await apiCall('/api/image/delete-profile-photo', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error deleting profile photo:', error);
       throw error;
     }
   },

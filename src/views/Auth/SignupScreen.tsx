@@ -136,11 +136,12 @@ const SignupScreen = () => {
             }) => (
               <View>
                 {/* Username */}
+                <Text style={styles.label}>Username</Text>
                 <View style={styles.inputContainer}>
                   <Icon name="account-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Username"
+                    placeholder="Enter your username"
                     placeholderTextColor="#888"
                     onChangeText={handleChange('username')}
                     onBlur={handleBlur('username')}
@@ -152,11 +153,12 @@ const SignupScreen = () => {
                 )}
 
                 {/* Email */}
+                <Text style={styles.label}>Email Address</Text>
                 <View style={styles.inputContainer}>
                   <Icon name="email-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Email"
+                    placeholder="Enter your email address"
                     placeholderTextColor="#888"
                     keyboardType="email-address"
                     onChangeText={handleChange('email')}
@@ -169,11 +171,12 @@ const SignupScreen = () => {
                 )}
 
                 {/* Password */}
+                <Text style={styles.label}>Password</Text>
                 <View style={styles.inputContainer}>
                   <Icon name="lock-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Password"
+                    placeholder="Enter your password"
                     placeholderTextColor="#888"
                     secureTextEntry={!showPassword}
                     onChangeText={handleChange('password')}
@@ -195,11 +198,12 @@ const SignupScreen = () => {
                 )}
 
                 {/* Confirm Password */}
+                <Text style={styles.label}>Confirm Password</Text>
                 <View style={styles.inputContainer}>
                   <Icon name="lock-outline" size={22} style={styles.icon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Confirm Password"
+                    placeholder="Confirm your password"
                     placeholderTextColor="#888"
                     secureTextEntry={!showConfirmPassword}
                     onChangeText={handleChange('confirmPassword')}
@@ -318,6 +322,12 @@ const styles = StyleSheet.create({
   },
   icon: { marginRight: 8, color: '#444' },
   input: { flex: 1, height: '100%', fontSize: 15, color: '#000' },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
   errorText: {
     color: 'red',
     fontSize: 12,

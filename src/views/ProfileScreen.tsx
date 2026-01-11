@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -18,6 +19,8 @@ import shape from '../assets/images/Group 38.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/RootNavigator';
+import { launchImageLibrary, launchCamera, ImagePickerResponse, MediaType } from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 
 export const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
 const ProfileScreen = () => {
@@ -25,6 +28,7 @@ const ProfileScreen = () => {
 
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const dispatch = useDispatch();
 
   const getLoggedUser = async () => {
@@ -45,6 +49,92 @@ const ProfileScreen = () => {
   useEffect(() => {
     getLoggedUser();
   }, []);
+
+  // Image picker functions
+  const selectImageSource = () => {
+    Alert.alert(
+      'Select Image Source',
+      'Choose where to get the image from',
+      [
+        { text: 'Camera', onPress: openCamera },
+        { text: 'Gallery', onPress: openGallery },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+    );
+  };
+
+  const openCamera = () => {
+    const options = {
+      mediaType: 'photo' as MediaType,
+      quality: 0.8,
+      includeBase64: false,
+    };
+
+    launchCamera(options, handleImageResponse);
+  };
+
+  const openGallery = () => {
+    const options = {
+      mediaType: 'photo' as MediaType,
+      quality: 0.8,
+      includeBase64: false,
+    };
+
+    launchImageLibrary(options, handleImageResponse);
+  };
+
+  const handleImageResponse = async (response: ImagePickerResponse) => {
+    if (response.didCancel) {
+      return;
+    }
+
+    if (response.errorMessage) {
+      Alert.alert('Error', response.errorMessage);
+      return;
+    }
+
+    if (response.assets && response.assets[0]) {
+      const asset = response.assets[0];
+      await uploadProfilePhoto(asset.uri!, asset.type || 'image/jpeg');
+    }
+  };
+
+  const uploadProfilePhoto = async (imageUri: string, imageType: string) => {
+    try {
+      setUploadingPhoto(true);
+      const token = await AsyncStorage.getItem('token');
+
+      const response = await apiService.uploadProfilePhoto({
+        token,
+        imageUri,
+        imageType,
+      });
+
+      if (response.status === 'success') {
+        Toast.show({
+          type: 'success',
+          text1: 'Profile Photo Updated',
+          text2: 'Your profile photo has been uploaded successfully',
+        });
+
+        // Update local user state
+        setUser({ ...user, avatar: response.avatar });
+
+        // Refresh user data
+        await getLoggedUser();
+      } else {
+        Alert.alert('Error', response.message || 'Failed to upload photo');
+      }
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      Alert.alert(
+        'Upload Failed',
+        error.message || 'Something went wrong while uploading'
+      );
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -83,13 +173,22 @@ const ProfileScreen = () => {
             }}
             style={styles.avatar}
           />
-          <TouchableOpacity style={styles.editAvatar}>
-            <MaterialCommunityIcons
-              name="camera-outline"
-              size={18}
-              color="#fff"
-            />
-          </TouchableOpacity>
+          {uploadingPhoto ? (
+            <View style={styles.editAvatar}>
+              <ActivityIndicator size="small" color="#fff" />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.editAvatar}
+              onPress={selectImageSource}
+            >
+              <MaterialCommunityIcons
+                name="camera-outline"
+                size={18}
+                color="#fff"
+              />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={{ alignItems: 'center' }}>
@@ -146,7 +245,7 @@ const ProfileScreen = () => {
       {/* Logout */}
       <TouchableOpacity
         style={styles.logoutBtn}
-        onPress={() => handleLogout(dispatch)}
+        onPress={() => handleLogout(dispatch, navigation)}
       >
         <MaterialCommunityIcons name="logout" size={20} color="#4F46E5" />
         <Text style={styles.logoutText}>Log out</Text>

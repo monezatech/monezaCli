@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,13 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RootState } from '../../store/store';
+import { RootState } from '../../store/index';
 import { apiService } from '../../services/service';
-import { handleLogout } from '../../utils/checkUserAuth'; // Corrected import path
+import { handleLogout } from '../../utils/checkUserAuth';
 
 export default function SettingsScreen() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [language, setLanguage] = useState('en');
-
   const navigation = useNavigation();
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.userState.user);

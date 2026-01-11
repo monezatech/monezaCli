@@ -17,7 +17,7 @@ export default function BottomTabNavigator() {
       tabBar={props => <CustomeTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Analytics" component={MainNavigation} />
+      {/* <Tab.Screen name="Analytics" component={MainNavigation} /> */}
       <Tab.Screen name="Notification" component={NotificationScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

@@ -4,6 +4,7 @@ import LoginScreen from '../views/Auth/LoginScreen';
 import SignupScreen from '../views/Auth/SignupScreen';
 import TermsAndConditionsScreen from '../views/TermsAndCondition';
 import SettingsScreen from '../views/Setting/SettingsScreen';
+import ChangePasswordScreen from '../views/Setting/ChangePasswordScreen';
 import DrawerNavigator from './DrawerNavigator';
 import CategoryCoursesScreen from '../views/CategoryCoursesScreen'; // Assuming this path
 import NotificationScreen from '../views/Notifications/NotificationScreen';
@@ -15,6 +16,7 @@ import EditUserScreen from '../views/User/EditUser';
 import MainNavigation from '../Cashfree/components/MainNavigation';
 import BundleDetailScreen from '../views/BundleDetailScreen';
 import WalletScreen from '../views/WalletScreen';
+import ReferralScreen from '../views/ReferralScreen';
 
 export type RootStackParamList = {
   DrawerNavigator: undefined;
@@ -22,6 +24,7 @@ export type RootStackParamList = {
   SignupScreen: undefined;
   TermsAndConditionsScreen: undefined;
   SettingsScreen: undefined;
+  ChangePassword: undefined;
   CategoryCoursesScreen: { categoryId: string; categoryName: string };
   NotificationScreen: undefined;
   ResetPassword: undefined;
@@ -32,6 +35,7 @@ export type RootStackParamList = {
   MainNavigation : undefined;
   BundleDetailScreen: { bundle: any };
   WalletScreen: undefined;
+  ReferralScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -49,13 +53,14 @@ export default function RootNavigator({ initialRouteName, toggleTheme }: RootNav
     >
       {/* Replace BottomTabNavigator with DrawerNavigator */}
       <Stack.Screen name="DrawerNavigator">
-        {props => <DrawerNavigator {...props} toggleTheme={toggleTheme} />}
+        {props => <DrawerNavigator {...props} />}
       </Stack.Screen>
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="SignupScreen" component={SignupScreen} />
       <Stack.Screen name="SettingsScreen">
         {props => <SettingsScreen {...props} toggleTheme={toggleTheme} />}
       </Stack.Screen>
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
 
       <Stack.Screen
         name="TermsAndConditionsScreen"
@@ -77,6 +82,7 @@ export default function RootNavigator({ initialRouteName, toggleTheme }: RootNav
       <Stack.Screen name="MainNavigation" component={MainNavigation} />
       <Stack.Screen name="BundleDetailScreen" component={BundleDetailScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
+      <Stack.Screen name="ReferralScreen" component={ReferralScreen} />
     </Stack.Navigator>
   );
 }

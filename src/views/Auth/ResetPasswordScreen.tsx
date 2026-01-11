@@ -43,16 +43,18 @@ const ResetPassword = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Enter your new password</Text>
+      <Text style={styles.label}>New Password</Text>
       <TextInput
         secureTextEntry
-        placeholder="New password"
+        placeholder="Enter new password"
         value={password}
         onChangeText={setPassword}
         style={styles.input}
       />
+      <Text style={styles.label}>Confirm Password</Text>
       <TextInput
         secureTextEntry
-        placeholder="Confirm password"
+        placeholder="Confirm new password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         style={styles.input}
@@ -67,6 +69,12 @@ export default ResetPassword;
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, justifyContent: 'center' },
   title: { fontSize: 18, marginBottom: 15, textAlign: 'center' },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
   input: {
     borderBottomWidth: 1,
     borderColor: '#ccc',
